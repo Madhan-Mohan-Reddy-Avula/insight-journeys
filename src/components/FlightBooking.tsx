@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SearchableInput } from "./SearchableInput";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,6 +15,16 @@ export const FlightBooking = () => {
   const [departureDate, setDepartureDate] = useState<Date>();
   const [returnDate, setReturnDate] = useState<Date>();
   const [tripType, setTripType] = useState("one-way");
+  const [fromCity, setFromCity] = useState("");
+  const [toCity, setToCity] = useState("");
+
+  const airports = [
+    "Mumbai (BOM)", "Delhi (DEL)", "Bangalore (BLR)", "Chennai (MAA)", "Kolkata (CCU)",
+    "Hyderabad (HYD)", "Pune (PNQ)", "Ahmedabad (AMD)", "Jaipur (JAI)", "Goa (GOI)",
+    "Kochi (COK)", "Thiruvananthapuram (TRV)", "Coimbatore (CJB)", "Indore (IDR)",
+    "Bhopal (BHO)", "Nagpur (NAG)", "Lucknow (LKO)", "Patna (PAT)", "Srinagar (SXR)",
+    "Jammu (IXJ)", "Amritsar (ATQ)", "Chandigarh (IXC)", "Dehradun (DED)", "Udaipur (UDR)"
+  ];
 
   return (
     <Card className="w-full">
@@ -41,18 +52,22 @@ export const FlightBooking = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="from-flight">From</Label>
-              <Input
+              <SearchableInput
                 id="from-flight"
                 placeholder="Departure city or airport"
-                className="w-full"
+                suggestions={airports}
+                value={fromCity}
+                onChange={setFromCity}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="to-flight">To</Label>
-              <Input
+              <SearchableInput
                 id="to-flight"
                 placeholder="Destination city or airport"
-                className="w-full"
+                suggestions={airports}
+                value={toCity}
+                onChange={setToCity}
               />
             </div>
           </div>

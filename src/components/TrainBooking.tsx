@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SearchableInput } from "./SearchableInput";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,6 +13,17 @@ import { cn } from "@/lib/utils";
 
 export const TrainBooking = () => {
   const [date, setDate] = useState<Date>();
+  const [fromStation, setFromStation] = useState("");
+  const [toStation, setToStation] = useState("");
+
+  const stations = [
+    "New Delhi Railway Station", "Mumbai Central", "Howrah Junction", "Chennai Central",
+    "Bangalore City Junction", "Hyderabad Deccan", "Pune Junction", "Ahmedabad Junction",
+    "Jaipur Junction", "Kanpur Central", "Lucknow Charbagh", "Nagpur Junction",
+    "Bhopal Junction", "Indore Junction", "Gwalior Junction", "Agra Cantt",
+    "Allahabad Junction", "Varanasi Junction", "Patna Junction", "Gaya Junction",
+    "Kolkata Sealdah", "Ernakulam Junction", "Thiruvananthapuram Central", "Coimbatore Junction"
+  ];
 
   return (
     <Card className="w-full">
@@ -26,18 +38,22 @@ export const TrainBooking = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="from-train">From Station</Label>
-              <Input
+              <SearchableInput
                 id="from-train"
                 placeholder="Departure station"
-                className="w-full"
+                suggestions={stations}
+                value={fromStation}
+                onChange={setFromStation}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="to-train">To Station</Label>
-              <Input
+              <SearchableInput
                 id="to-train"
                 placeholder="Destination station"
-                className="w-full"
+                suggestions={stations}
+                value={toStation}
+                onChange={setToStation}
               />
             </div>
           </div>

@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SearchableInput } from "./SearchableInput";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, MapPin, Users } from "lucide-react";
@@ -11,6 +12,16 @@ import { cn } from "@/lib/utils";
 
 export const BusBooking = () => {
   const [date, setDate] = useState<Date>();
+  const [fromCity, setFromCity] = useState("");
+  const [toCity, setToCity] = useState("");
+
+  const cities = [
+    "Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata", "Hyderabad", "Pune", "Ahmedabad",
+    "Jaipur", "Surat", "Lucknow", "Kanpur", "Nagpur", "Indore", "Thane", "Bhopal",
+    "Visakhapatnam", "Pimpri-Chinchwad", "Patna", "Vadodara", "Ghaziabad", "Ludhiana",
+    "Agra", "Nashik", "Faridabad", "Meerut", "Rajkot", "Kalyan-Dombivali", "Vasai-Virar",
+    "Varanasi", "Srinagar", "Dhanbad", "Jodhpur", "Amritsar", "Raipur", "Allahabad"
+  ];
 
   return (
     <Card className="w-full">
@@ -25,18 +36,22 @@ export const BusBooking = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="from-bus">From</Label>
-              <Input
+              <SearchableInput
                 id="from-bus"
                 placeholder="Departure city"
-                className="w-full"
+                suggestions={cities}
+                value={fromCity}
+                onChange={setFromCity}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="to-bus">To</Label>
-              <Input
+              <SearchableInput
                 id="to-bus"
                 placeholder="Destination city"
-                className="w-full"
+                suggestions={cities}
+                value={toCity}
+                onChange={setToCity}
               />
             </div>
           </div>
