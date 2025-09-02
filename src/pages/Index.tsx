@@ -1,13 +1,50 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { TripHero } from "@/components/TripHero";
+import { FeaturedDestinations } from "@/components/FeaturedDestinations";
+import { HowItWorks } from "@/components/HowItWorks";
+import { useEffect } from "react";
 
 const Index = () => {
+  // SEO optimization
+  useEffect(() => {
+    document.title = "AI Trip Planner - Personalized Travel Itineraries | Smart Travel Planning";
+    
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Plan your perfect trip with AI-powered personalized itineraries. Get custom travel plans for India based on your budget, interests, and preferences. Book everything in one click.');
+    }
+
+    // Add structured data for SEO
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "AI Trip Planner",
+      "description": "AI-powered personalized trip planner for India travel",
+      "applicationCategory": "TravelApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      }
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(structuredData);
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <main className="min-h-screen">
+      <TripHero />
+      <FeaturedDestinations />
+      <HowItWorks />
+    </main>
   );
 };
 
