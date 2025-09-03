@@ -11,12 +11,12 @@ type Message = {
   message: string;
 };
 
-const BusAIPage = () => {
+const TravelAIPage = () => {
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
       type: "ai",
-      message: "Hello! I'm your AI bus travel assistant. I can help you find the best bus routes, compare prices, and plan your journey. What would you like to know?"
+      message: "Hello! I'm your AI travel assistant. I can help you plan complete trips, find the best routes, compare prices for buses, trains, flights, and hotels. What would you like to know about your travel plans?"
     }
   ]);
 
@@ -25,7 +25,7 @@ const BusAIPage = () => {
     
     const newMessages: Message[] = [
       { type: "user", message: query },
-      { type: "ai", message: "I'm analyzing your request and finding the best bus options for you. This feature will be enhanced with real AI capabilities soon!" }
+      { type: "ai", message: "I'm analyzing your travel request and finding the best options across all transportation modes and accommodations. This feature will be enhanced with real AI capabilities soon!" }
     ];
     
     setMessages(prev => [...prev, ...newMessages]);
@@ -44,7 +44,7 @@ const BusAIPage = () => {
             </Link>
             <div className="flex items-center gap-2">
               <Bot className="h-8 w-8 text-primary" />
-              <h1 className="text-3xl font-bold text-foreground">Bus AI Assistant</h1>
+              <h1 className="text-3xl font-bold text-foreground">Travel AI Assistant</h1>
             </div>
           </div>
 
@@ -74,7 +74,7 @@ const BusAIPage = () => {
               
               <div className="flex gap-2">
                 <Textarea
-                  placeholder="Ask me anything about bus travel..."
+                  placeholder="Ask me about travel plans, booking options, routes, or anything travel-related..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   className="resize-none"
@@ -102,17 +102,25 @@ const BusAIPage = () => {
                     variant="outline" 
                     size="sm" 
                     className="w-full justify-start"
-                    onClick={() => setQuery("Find buses from Delhi to Mumbai")}
+                    onClick={() => setQuery("Plan a complete trip from Delhi to Goa")}
                   >
-                    Delhi to Mumbai routes
+                    Complete trip planning
                   </Button>
                   <Button 
                     variant="outline" 
                     size="sm" 
                     className="w-full justify-start"
-                    onClick={() => setQuery("Compare bus prices for weekend travel")}
+                    onClick={() => setQuery("Compare all travel options Mumbai to Bangalore")}
                   >
-                    Weekend travel tips
+                    Compare travel modes
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full justify-start"
+                    onClick={() => setQuery("Find budget hotels in Jaipur")}
+                  >
+                    Budget accommodation
                   </Button>
                 </div>
               </CardContent>
@@ -120,12 +128,12 @@ const BusAIPage = () => {
 
             <Card>
               <CardContent className="p-4">
-                <h3 className="font-semibold mb-2">Popular Routes</h3>
+                <h3 className="font-semibold mb-2">Popular Destinations</h3>
                 <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>• Delhi - Mumbai</p>
-                  <p>• Bangalore - Chennai</p>
-                  <p>• Delhi - Jaipur</p>
-                  <p>• Mumbai - Pune</p>
+                  <p>• Delhi - Mumbai (All modes)</p>
+                  <p>• Bangalore - Chennai (Flight/Train)</p>
+                  <p>• Delhi - Jaipur (Bus/Train)</p>
+                  <p>• Mumbai - Goa (Flight/Bus)</p>
                 </div>
               </CardContent>
             </Card>
@@ -134,10 +142,10 @@ const BusAIPage = () => {
               <CardContent className="p-4">
                 <h3 className="font-semibold mb-2">AI Features</h3>
                 <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>• Route optimization</p>
-                  <p>• Price predictions</p>
-                  <p>• Travel recommendations</p>
-                  <p>• Real-time updates</p>
+                  <p>• Multi-modal trip planning</p>
+                  <p>• Price comparison across modes</p>
+                  <p>• Personalized recommendations</p>
+                  <p>• Real-time booking assistance</p>
                 </div>
               </CardContent>
             </Card>
@@ -148,4 +156,4 @@ const BusAIPage = () => {
   );
 };
 
-export default BusAIPage;
+export default TravelAIPage;

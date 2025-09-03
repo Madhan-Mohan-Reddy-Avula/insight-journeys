@@ -7,7 +7,7 @@ export const BottomNavigation = () => {
 
   const navItems = [
     { icon: Home, label: "Home", path: "/" },
-    { icon: Bot, label: "Bus AI", path: "/bus-ai" },
+    { icon: Bot, label: "AI", path: "/bus-ai" },
     { icon: Bus, label: "Bus", path: "/bus-booking" },
     { icon: Train, label: "Train", path: "/train-booking" },
     { icon: Plane, label: "Flight", path: "/flight-booking" },
