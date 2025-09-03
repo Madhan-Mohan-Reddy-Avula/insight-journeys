@@ -41,7 +41,7 @@ const Index = () => {
   }, []);
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pb-20">
       <TripHero />
       <BookingNavigation />
       <FeaturedDestinations />
