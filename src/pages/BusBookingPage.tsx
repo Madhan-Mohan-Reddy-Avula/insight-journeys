@@ -1,4 +1,5 @@
 import { BusBooking } from "@/components/BusBooking";
+import { ProtectedBooking } from "@/components/ProtectedBooking";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -16,7 +17,9 @@ const BusBookingPage = () => {
             </Link>
             <h1 className="text-3xl font-bold text-foreground">Bus Booking</h1>
           </div>
-          <BusBooking />
+          <ProtectedBooking bookingType="Bus">
+            <BusBooking />
+          </ProtectedBooking>
         </div>
       </div>
     </div>

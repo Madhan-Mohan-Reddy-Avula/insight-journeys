@@ -1,4 +1,4 @@
-import { Home, Bus, Train, Plane, Hotel, Bot } from "lucide-react";
+import { Home, Bus, Train, Plane, Hotel, Bot, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -7,16 +7,17 @@ export const BottomNavigation = () => {
 
   const navItems = [
     { icon: Home, label: "Home", path: "/" },
-    { icon: Bot, label: "AI", path: "/bus-ai" },
+    { icon: Bot, label: "AI", path: "/ai" },
     { icon: Bus, label: "Bus", path: "/bus-booking" },
     { icon: Train, label: "Train", path: "/train-booking" },
     { icon: Plane, label: "Flight", path: "/flight-booking" },
     { icon: Hotel, label: "Hotel", path: "/hotel-booking" },
+    { icon: User, label: "Profile", path: "/profile" },
   ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50">
-      <div className="flex items-center justify-around py-2 px-4 max-w-screen-xl mx-auto">
+      <div className="grid grid-cols-7 py-2 px-2 max-w-screen-xl mx-auto">
         {navItems.map(({ icon: Icon, label, path }) => {
           const isActive = location.pathname === path;
           return (
