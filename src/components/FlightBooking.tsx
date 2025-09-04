@@ -10,6 +10,8 @@ import { CalendarIcon, Plane, Users, ArrowLeftRight } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const FlightBooking = () => {
   const [departureDate, setDepartureDate] = useState<Date>();
@@ -17,6 +19,17 @@ export const FlightBooking = () => {
   const [tripType, setTripType] = useState("one-way");
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleSearch = () => {
+    if (!user) {
+      navigate("/auth", { state: { from: location } });
+      return;
+    }
+    // Proceed with flight search
+  };
 
   const airports = [
     "Mumbai (BOM)", "Delhi (DEL)", "Bangalore (BLR)", "Chennai (MAA)", "Kolkata (CCU)",
@@ -158,7 +171,7 @@ export const FlightBooking = () => {
             </Select>
           </div>
 
-          <Button className="w-full" size="lg">
+          <Button className="w-full" size="lg" onClick={handleSearch}>
             Search Flights
           </Button>
         </form>

@@ -1,5 +1,4 @@
 import { TrainBooking } from "@/components/TrainBooking";
-import { ProtectedBooking } from "@/components/ProtectedBooking";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -17,9 +16,7 @@ const TrainBookingPage = () => {
             </Link>
             <h1 className="text-3xl font-bold text-foreground">Train Booking</h1>
           </div>
-          <ProtectedBooking bookingType="Train">
-            <TrainBooking />
-          </ProtectedBooking>
+          <TrainBooking />
         </div>
       </div>
     </div>

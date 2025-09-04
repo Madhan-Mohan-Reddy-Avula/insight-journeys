@@ -9,11 +9,24 @@ import { CalendarIcon, MapPin, Users } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const BusBooking = () => {
   const [date, setDate] = useState<Date>();
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleSearch = () => {
+    if (!user) {
+      navigate("/auth", { state: { from: location } });
+      return;
+    }
+    // Proceed with bus search
+  };
 
   const cities = [
     "Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata", "Hyderabad", "Pune", "Ahmedabad",
@@ -98,7 +111,7 @@ export const BusBooking = () => {
             </div>
           </div>
 
-          <Button className="w-full" size="lg">
+          <Button className="w-full" size="lg" onClick={handleSearch}>
             Search Buses
           </Button>
         </form>

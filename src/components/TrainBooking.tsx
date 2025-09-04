@@ -10,11 +10,24 @@ import { CalendarIcon, Train, Users } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const TrainBooking = () => {
   const [date, setDate] = useState<Date>();
   const [fromStation, setFromStation] = useState("");
   const [toStation, setToStation] = useState("");
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleSearch = () => {
+    if (!user) {
+      navigate("/auth", { state: { from: location } });
+      return;
+    }
+    // Proceed with train search
+  };
 
   const stations = [
     "New Delhi Railway Station", "Mumbai Central", "Howrah Junction", "Chennai Central",
@@ -115,7 +128,7 @@ export const TrainBooking = () => {
             </div>
           </div>
 
-          <Button className="w-full" size="lg">
+          <Button className="w-full" size="lg" onClick={handleSearch}>
             Search Trains
           </Button>
         </form>
