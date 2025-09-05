@@ -68,12 +68,49 @@ export const HotelBooking = () => {
     setSearching(false);
   };
 
-  const handleBookHotel = (hotel: any) => {
+  const handleBookHotel = async (hotel: any) => {
     if (!user) {
       navigate("/auth", { state: { from: location } });
       return;
     }
-    // Proceed with booking
+    
+    try {
+      const { data, error } = await (supabase as any)
+        .from('bookings')
+        .insert([
+          {
+            user_id: user.id,
+            booking_type: 'hotel',
+            from_location: destination,
+            departure_date: checkInDate,
+            return_date: checkOutDate,
+            passengers: parseInt((document.getElementById('guests-hotel') as HTMLInputElement)?.value || '1'),
+            total_amount: hotel.price_per_night,
+            status: 'pending',
+            booking_details: {
+              hotel_id: hotel.id,
+              hotel_name: hotel.hotel_name,
+              location: hotel.location,
+              star_rating: hotel.star_rating,
+              price_per_night: hotel.price_per_night,
+              amenities: hotel.amenities
+            }
+          }
+        ])
+        .select();
+
+      if (error) {
+        console.error('Error creating booking:', error);
+        alert('Failed to create booking. Please try again.');
+        return;
+      }
+
+      alert('Booking created successfully!');
+      console.log('Booking created:', data);
+    } catch (error) {
+      console.error('Error in handleBookHotel:', error);
+      alert('Failed to create booking. Please try again.');
+    }
   };
 
   const cities = [

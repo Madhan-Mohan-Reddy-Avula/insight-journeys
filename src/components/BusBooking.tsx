@@ -66,12 +66,49 @@ export const BusBooking = () => {
     setSearching(false);
   };
 
-  const handleBookBus = (bus: any) => {
+  const handleBookBus = async (bus: any) => {
     if (!user) {
       navigate("/auth", { state: { from: location } });
       return;
     }
-    // Proceed with booking
+    
+    try {
+      const { data, error } = await (supabase as any)
+        .from('bookings')
+        .insert([
+          {
+            user_id: user.id,
+            booking_type: 'bus',
+            from_location: fromCity,
+            to_location: toCity,
+            departure_date: date,
+            passengers: parseInt((document.getElementById('passengers-bus') as HTMLInputElement)?.value || '1'),
+            total_amount: bus.price,
+            status: 'pending',
+            booking_details: {
+              bus_id: bus.id,
+              operator_name: bus.operator_name,
+              bus_type: bus.bus_type,
+              departure_time: bus.departure_time,
+              arrival_time: bus.arrival_time,
+              bus_number: bus.bus_number
+            }
+          }
+        ])
+        .select();
+
+      if (error) {
+        console.error('Error creating booking:', error);
+        alert('Failed to create booking. Please try again.');
+        return;
+      }
+
+      alert('Booking created successfully!');
+      console.log('Booking created:', data);
+    } catch (error) {
+      console.error('Error in handleBookBus:', error);
+      alert('Failed to create booking. Please try again.');
+    }
   };
 
   const cities = [

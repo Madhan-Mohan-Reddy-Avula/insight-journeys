@@ -69,12 +69,51 @@ export const FlightBooking = () => {
     setSearching(false);
   };
 
-  const handleBookFlight = (flight: any) => {
+  const handleBookFlight = async (flight: any) => {
     if (!user) {
       navigate("/auth", { state: { from: location } });
       return;
     }
-    // Proceed with booking
+    
+    try {
+      const { data, error } = await (supabase as any)
+        .from('bookings')
+        .insert([
+          {
+            user_id: user.id,
+            booking_type: 'flight',
+            from_location: fromCity,
+            to_location: toCity,
+            departure_date: departureDate,
+            return_date: returnDate,
+            passengers: parseInt((document.getElementById('passengers-flight') as HTMLInputElement)?.value || '1'),
+            total_amount: flight.price,
+            status: 'pending',
+            booking_details: {
+              flight_id: flight.id,
+              airline_name: flight.airline_name,
+              flight_number: flight.flight_number,
+              departure_time: flight.departure_time,
+              arrival_time: flight.arrival_time,
+              duration_hours: flight.duration_hours,
+              aircraft_type: flight.aircraft_type
+            }
+          }
+        ])
+        .select();
+
+      if (error) {
+        console.error('Error creating booking:', error);
+        alert('Failed to create booking. Please try again.');
+        return;
+      }
+
+      alert('Booking created successfully!');
+      console.log('Booking created:', data);
+    } catch (error) {
+      console.error('Error in handleBookFlight:', error);
+      alert('Failed to create booking. Please try again.');
+    }
   };
 
   const airports = [

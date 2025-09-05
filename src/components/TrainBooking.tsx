@@ -67,12 +67,50 @@ export const TrainBooking = () => {
     setSearching(false);
   };
 
-  const handleBookTrain = (train: any) => {
+  const handleBookTrain = async (train: any) => {
     if (!user) {
       navigate("/auth", { state: { from: location } });
       return;
     }
-    // Proceed with booking
+    
+    try {
+      const { data, error } = await (supabase as any)
+        .from('bookings')
+        .insert([
+          {
+            user_id: user.id,
+            booking_type: 'train',
+            from_location: fromStation,
+            to_location: toStation,
+            departure_date: date,
+            passengers: parseInt((document.getElementById('passengers-train') as HTMLInputElement)?.value || '1'),
+            total_amount: train.classes?.sleeper?.price || train.classes?.['3ac']?.price || 0,
+            status: 'pending',
+            booking_details: {
+              train_id: train.id,
+              train_name: train.train_name,
+              train_number: train.train_number,
+              departure_time: train.departure_time,
+              arrival_time: train.arrival_time,
+              duration_hours: train.duration_hours,
+              classes: train.classes
+            }
+          }
+        ])
+        .select();
+
+      if (error) {
+        console.error('Error creating booking:', error);
+        alert('Failed to create booking. Please try again.');
+        return;
+      }
+
+      alert('Booking created successfully!');
+      console.log('Booking created:', data);
+    } catch (error) {
+      console.error('Error in handleBookTrain:', error);
+      alert('Failed to create booking. Please try again.');
+    }
   };
 
   const stations = [
