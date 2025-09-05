@@ -116,13 +116,11 @@ export const FlightBooking = () => {
     }
   };
 
-  const airports = [
-    "Mumbai (BOM)", "Delhi (DEL)", "Bangalore (BLR)", "Chennai (MAA)", "Kolkata (CCU)",
-    "Hyderabad (HYD)", "Pune (PNQ)", "Ahmedabad (AMD)", "Jaipur (JAI)", "Goa (GOI)",
-    "Kochi (COK)", "Thiruvananthapuram (TRV)", "Coimbatore (CJB)", "Indore (IDR)",
-    "Bhopal (BHO)", "Nagpur (NAG)", "Lucknow (LKO)", "Patna (PAT)", "Srinagar (SXR)",
-    "Jammu (IXJ)", "Amritsar (ATQ)", "Chandigarh (IXC)", "Dehradun (DED)", "Udaipur (UDR)"
-  ];
+  // Extract unique airports from database for suggestions
+  const airports = Array.from(new Set([
+    ...flights.map((flight: any) => flight.from_airport),
+    ...flights.map((flight: any) => flight.to_airport)
+  ])).filter(Boolean).sort();
 
   return (
     <Card className="w-full">

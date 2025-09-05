@@ -113,11 +113,11 @@ export const HotelBooking = () => {
     }
   };
 
-  const cities = [
-    "Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata", "Hyderabad", "Pune", "Ahmedabad",
-    "Jaipur", "Goa", "Kochi", "Thiruvananthapuram", "Coimbatore", "Indore", "Bhopal",
-    "Nagpur", "Lucknow", "Patna", "Srinagar", "Jammu", "Amritsar", "Chandigarh", "Dehradun", "Udaipur"
-  ];
+  // Extract unique cities from database for suggestions
+  const cities = Array.from(new Set([
+    ...hotels.map((hotel: any) => hotel.city),
+    ...hotels.map((hotel: any) => hotel.hotel_name)
+  ])).filter(Boolean).sort();
 
   return (
     <Card className="w-full">

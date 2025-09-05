@@ -111,13 +111,11 @@ export const BusBooking = () => {
     }
   };
 
-  const cities = [
-    "Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata", "Hyderabad", "Pune", "Ahmedabad",
-    "Jaipur", "Surat", "Lucknow", "Kanpur", "Nagpur", "Indore", "Thane", "Bhopal",
-    "Visakhapatnam", "Pimpri-Chinchwad", "Patna", "Vadodara", "Ghaziabad", "Ludhiana",
-    "Agra", "Nashik", "Faridabad", "Meerut", "Rajkot", "Kalyan-Dombivali", "Vasai-Virar",
-    "Varanasi", "Srinagar", "Dhanbad", "Jodhpur", "Amritsar", "Raipur", "Allahabad"
-  ];
+  // Extract unique cities from database for suggestions
+  const cities = Array.from(new Set([
+    ...buses.map((bus: any) => bus.from_city),
+    ...buses.map((bus: any) => bus.to_city)
+  ])).filter(Boolean).sort();
 
   return (
     <Card className="w-full">

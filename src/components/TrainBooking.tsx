@@ -113,14 +113,11 @@ export const TrainBooking = () => {
     }
   };
 
-  const stations = [
-    "New Delhi Railway Station", "Mumbai Central", "Howrah Junction", "Chennai Central",
-    "Bangalore City Junction", "Hyderabad Deccan", "Pune Junction", "Ahmedabad Junction",
-    "Jaipur Junction", "Kanpur Central", "Lucknow Charbagh", "Nagpur Junction",
-    "Bhopal Junction", "Indore Junction", "Gwalior Junction", "Agra Cantt",
-    "Allahabad Junction", "Varanasi Junction", "Patna Junction", "Gaya Junction",
-    "Kolkata Sealdah", "Ernakulam Junction", "Thiruvananthapuram Central", "Coimbatore Junction"
-  ];
+  // Extract unique stations from database for suggestions
+  const stations = Array.from(new Set([
+    ...trains.map((train: any) => train.from_station),
+    ...trains.map((train: any) => train.to_station)
+  ])).filter(Boolean).sort();
 
   return (
     <Card className="w-full">
@@ -229,14 +226,14 @@ export const TrainBooking = () => {
                     <p className="text-sm">Duration: {train.duration_hours} hours</p>
                   </div>
                   <div className="text-right">
-                    <div className="space-y-1">
-                      {train.classes && Object.entries(train.classes).map(([classType, classInfo]: [string, any]) => (
-                        <div key={classType} className="text-sm">
-                          <span className="font-medium">{classType.toUpperCase()}: </span>
-                          <span className="font-bold">₹{classInfo.price}</span>
-                        </div>
-                      ))}
-                    </div>
+                     <div className="space-y-1">
+                       {train.classes && Object.entries(train.classes).map(([classType, seats]: [string, any]) => (
+                         <div key={classType} className="text-sm">
+                           <span className="font-medium">{classType.toUpperCase()}: </span>
+                           <span>{seats} seats available</span>
+                         </div>
+                       ))}
+                     </div>
                     <Button onClick={() => handleBookTrain(train)} size="sm" className="mt-2">
                       Book Now
                     </Button>
