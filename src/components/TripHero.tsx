@@ -4,9 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/travel-hero.jpg";
 
 export const TripHero = () => {
+  const navigate = useNavigate();
   const [destination, setDestination] = useState("");
   const [budget, setBudget] = useState("");
   const [travelers, setTravelers] = useState("2");
@@ -29,6 +31,21 @@ export const TripHero = () => {
         ? prev.filter(t => t !== theme)
         : [...prev, theme]
     );
+  };
+
+  const handleCreateItinerary = () => {
+    if (destination.trim()) {
+      // Navigate to AI page with search parameters
+      navigate('/ai');
+    } else {
+      // If no destination specified, go to flight booking as default
+      navigate('/flight-booking');
+    }
+  };
+
+  const handleBrowseDestinations = () => {
+    // Navigate to hotel booking page for destination browsing
+    navigate('/hotel-booking');
   };
 
   return (
@@ -155,6 +172,7 @@ export const TripHero = () => {
               variant="hero" 
               size="lg"
               className="text-lg px-12 py-4"
+              onClick={handleCreateItinerary}
             >
               <Sparkles className="w-5 h-5 mr-2" />
               Create My Itinerary
@@ -163,6 +181,7 @@ export const TripHero = () => {
               variant="glass" 
               size="lg"
               className="text-lg px-8 py-4"
+              onClick={handleBrowseDestinations}
             >
               Browse Destinations
             </Button>
