@@ -51,18 +51,33 @@ export const BusBooking = () => {
 
   const handleSearch = async () => {
     if (!fromCity || !toCity || !date) {
+      alert('Please fill in all required fields (From, To, and Date)');
       return;
     }
 
     setSearching(true);
     
-    // Filter buses based on search criteria
-    const filteredBuses = buses.filter((bus: any) => 
-      bus.from_city.toLowerCase().includes(fromCity.toLowerCase()) &&
-      bus.to_city.toLowerCase().includes(toCity.toLowerCase())
-    );
+    try {
+      // More flexible search - check if any part of the city name matches
+      const filteredBuses = buses.filter((bus: any) => {
+        const fromMatch = bus.from_city.toLowerCase().includes(fromCity.toLowerCase()) ||
+                         fromCity.toLowerCase().includes(bus.from_city.toLowerCase());
+        const toMatch = bus.to_city.toLowerCase().includes(toCity.toLowerCase()) ||
+                       toCity.toLowerCase().includes(bus.to_city.toLowerCase());
+        return fromMatch && toMatch;
+      });
+      
+      setSearchResults(filteredBuses);
+      console.log('Bus search results:', filteredBuses);
+      
+      if (filteredBuses.length === 0) {
+        alert('No buses found for the selected route. Try different cities or check spelling.');
+      }
+    } catch (error) {
+      console.error('Error in bus search:', error);
+      alert('Error occurred while searching. Please try again.');
+    }
     
-    setSearchResults(filteredBuses);
     setSearching(false);
   };
 
@@ -199,14 +214,47 @@ export const BusBooking = () => {
 
         {searchResults.length > 0 && (
           <div className="mt-6 space-y-4">
-            <h3 className="text-lg font-semibold">Available Buses</h3>
+            <h3 className="text-lg font-semibold">Available Buses ({searchResults.length} found)</h3>
             {searchResults.map((bus: any) => (
               <Card key={bus.id} className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
                     <h4 className="font-semibold">{bus.operator_name}</h4>
-                    <p className="text-sm text-muted-foreground">{bus.bus_type}</p>
-                    <p className="text-sm">{bus.departure_time} - {bus.arrival_time}</p>
+                    <p className="text-sm text-muted-foreground">{bus.bus_type} - {bus.bus_number}</p>
+                    <p className="text-sm">{bus.from_city} → {bus.to_city}</p>
+                    <p className="text-sm">{bus.departure_time} - {bus.arrival_time} ({bus.duration_hours}h)</p>
+                    <p className="text-sm">Available seats: {bus.available_seats}</p>
+                    {bus.amenities && (
+                      <p className="text-xs text-muted-foreground">
+                        Amenities: {bus.amenities.join(', ')}
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold">₹{bus.price}</p>
+                    <Button onClick={() => handleBookBus(bus)} size="sm">
+                      Book Now
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Show all available buses if no search has been performed yet */}
+        {searchResults.length === 0 && buses.length > 0 && !searching && (
+          <div className="mt-6 space-y-4">
+            <h3 className="text-lg font-semibold">All Available Buses ({buses.length} total)</h3>
+            <p className="text-sm text-muted-foreground">Search above to filter buses by route</p>
+            {buses.slice(0, 3).map((bus: any) => (
+              <Card key={bus.id} className="p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold">{bus.operator_name}</h4>
+                    <p className="text-sm text-muted-foreground">{bus.bus_type} - {bus.bus_number}</p>
+                    <p className="text-sm">{bus.from_city} → {bus.to_city}</p>
+                    <p className="text-sm">{bus.departure_time} - {bus.arrival_time} ({bus.duration_hours}h)</p>
                     <p className="text-sm">Available seats: {bus.available_seats}</p>
                   </div>
                   <div className="text-right">
@@ -218,6 +266,11 @@ export const BusBooking = () => {
                 </div>
               </Card>
             ))}
+            {buses.length > 3 && (
+              <p className="text-sm text-muted-foreground text-center">
+                And {buses.length - 3} more buses... Use search to find specific routes.
+              </p>
+            )}
           </div>
         )}
       </CardContent>

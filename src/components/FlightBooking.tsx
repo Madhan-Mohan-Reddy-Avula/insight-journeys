@@ -54,18 +54,33 @@ export const FlightBooking = () => {
 
   const handleSearch = async () => {
     if (!fromCity || !toCity || !departureDate) {
+      alert('Please fill in all required fields (From, To, and Departure Date)');
       return;
     }
 
     setSearching(true);
     
-    // Filter flights based on search criteria
-    const filteredFlights = flights.filter((flight: any) => 
-      flight.from_airport.toLowerCase().includes(fromCity.toLowerCase()) &&
-      flight.to_airport.toLowerCase().includes(toCity.toLowerCase())
-    );
+    try {
+      // More flexible search - check if any part of the airport name matches
+      const filteredFlights = flights.filter((flight: any) => {
+        const fromMatch = flight.from_airport.toLowerCase().includes(fromCity.toLowerCase()) ||
+                         fromCity.toLowerCase().includes(flight.from_airport.toLowerCase());
+        const toMatch = flight.to_airport.toLowerCase().includes(toCity.toLowerCase()) ||
+                       toCity.toLowerCase().includes(flight.to_airport.toLowerCase());
+        return fromMatch && toMatch;
+      });
+      
+      setSearchResults(filteredFlights);
+      console.log('Flight search results:', filteredFlights);
+      
+      if (filteredFlights.length === 0) {
+        alert('No flights found for the selected route. Try different airports or check spelling.');
+      }
+    } catch (error) {
+      console.error('Error in flight search:', error);
+      alert('Error occurred while searching. Please try again.');
+    }
     
-    setSearchResults(filteredFlights);
     setSearching(false);
   };
 
@@ -261,15 +276,18 @@ export const FlightBooking = () => {
 
         {searchResults.length > 0 && (
           <div className="mt-6 space-y-4">
-            <h3 className="text-lg font-semibold">Available Flights</h3>
+            <h3 className="text-lg font-semibold">Available Flights ({searchResults.length} found)</h3>
             {searchResults.map((flight: any) => (
               <Card key={flight.id} className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
                     <h4 className="font-semibold">{flight.airline_name} - {flight.flight_number}</h4>
+                    <p className="text-sm">{flight.from_airport} → {flight.to_airport}</p>
                     <p className="text-sm">{new Date(flight.departure_time).toLocaleString()} - {new Date(flight.arrival_time).toLocaleString()}</p>
-                    <p className="text-sm">Duration: {flight.duration_hours} hours</p>
-                    <p className="text-sm">Available seats: {flight.available_seats}</p>
+                    <p className="text-sm">Duration: {flight.duration_hours} hours | Available seats: {flight.available_seats}</p>
+                    {flight.aircraft_type && (
+                      <p className="text-xs text-muted-foreground">Aircraft: {flight.aircraft_type}</p>
+                    )}
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold">₹{flight.price}</p>
@@ -280,6 +298,37 @@ export const FlightBooking = () => {
                 </div>
               </Card>
             ))}
+          </div>
+        )}
+
+        {/* Show all available flights if no search has been performed yet */}
+        {searchResults.length === 0 && flights.length > 0 && !searching && (
+          <div className="mt-6 space-y-4">
+            <h3 className="text-lg font-semibold">All Available Flights ({flights.length} total)</h3>
+            <p className="text-sm text-muted-foreground">Search above to filter flights by route</p>
+            {flights.slice(0, 3).map((flight: any) => (
+              <Card key={flight.id} className="p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold">{flight.airline_name} - {flight.flight_number}</h4>
+                    <p className="text-sm">{flight.from_airport} → {flight.to_airport}</p>
+                    <p className="text-sm">{new Date(flight.departure_time).toLocaleString()} - {new Date(flight.arrival_time).toLocaleString()}</p>
+                    <p className="text-sm">Duration: {flight.duration_hours} hours | Available seats: {flight.available_seats}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold">₹{flight.price}</p>
+                    <Button onClick={() => handleBookFlight(flight)} size="sm">
+                      Book Now
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+            {flights.length > 3 && (
+              <p className="text-sm text-muted-foreground text-center">
+                And {flights.length - 3} more flights... Use search to find specific routes.
+              </p>
+            )}
           </div>
         )}
       </CardContent>

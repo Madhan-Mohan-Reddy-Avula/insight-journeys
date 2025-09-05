@@ -52,19 +52,34 @@ export const HotelBooking = () => {
 
   const handleSearch = async () => {
     if (!destination || !checkInDate || !checkOutDate) {
+      alert('Please fill in all required fields (Destination, Check-in Date, and Check-out Date)');
       return;
     }
 
     setSearching(true);
     
-    // Filter hotels based on search criteria
-    const filteredHotels = hotels.filter((hotel: any) => 
-      hotel.city.toLowerCase().includes(destination.toLowerCase()) ||
-      hotel.hotel_name.toLowerCase().includes(destination.toLowerCase()) ||
-      hotel.location.toLowerCase().includes(destination.toLowerCase())
-    );
+    try {
+      // More flexible search - check multiple fields
+      const filteredHotels = hotels.filter((hotel: any) => {
+        const destLower = destination.toLowerCase();
+        return hotel.city.toLowerCase().includes(destLower) ||
+               hotel.hotel_name.toLowerCase().includes(destLower) ||
+               hotel.location.toLowerCase().includes(destLower) ||
+               destLower.includes(hotel.city.toLowerCase()) ||
+               destLower.includes(hotel.hotel_name.toLowerCase());
+      });
+      
+      setSearchResults(filteredHotels);
+      console.log('Hotel search results:', filteredHotels);
+      
+      if (filteredHotels.length === 0) {
+        alert('No hotels found for the selected destination. Try different city names or check spelling.');
+      }
+    } catch (error) {
+      console.error('Error in hotel search:', error);
+      alert('Error occurred while searching. Please try again.');
+    }
     
-    setSearchResults(filteredHotels);
     setSearching(false);
   };
 
@@ -238,7 +253,7 @@ export const HotelBooking = () => {
 
         {searchResults.length > 0 && (
           <div className="mt-6 space-y-4">
-            <h3 className="text-lg font-semibold">Available Hotels</h3>
+            <h3 className="text-lg font-semibold">Available Hotels ({searchResults.length} found)</h3>
             {searchResults.map((hotel: any) => (
               <Card key={hotel.id} className="p-4">
                 <div className="flex justify-between items-center">
@@ -264,6 +279,39 @@ export const HotelBooking = () => {
                 </div>
               </Card>
             ))}
+          </div>
+        )}
+
+        {/* Show all available hotels if no search has been performed yet */}
+        {searchResults.length === 0 && hotels.length > 0 && !searching && (
+          <div className="mt-6 space-y-4">
+            <h3 className="text-lg font-semibold">All Available Hotels ({hotels.length} total)</h3>
+            <p className="text-sm text-muted-foreground">Search above to filter hotels by destination</p>
+            {hotels.slice(0, 3).map((hotel: any) => (
+              <Card key={hotel.id} className="p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold">{hotel.hotel_name}</h4>
+                    <p className="text-sm text-muted-foreground">{hotel.location}, {hotel.city}</p>
+                    {hotel.star_rating && (
+                      <p className="text-sm">★ {hotel.star_rating} Star Hotel</p>
+                    )}
+                    <p className="text-sm">Available rooms: {hotel.available_rooms}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold">₹{hotel.price_per_night}/night</p>
+                    <Button onClick={() => handleBookHotel(hotel)} size="sm">
+                      Book Now
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+            {hotels.length > 3 && (
+              <p className="text-sm text-muted-foreground text-center">
+                And {hotels.length - 3} more hotels... Use search to find specific destinations.
+              </p>
+            )}
           </div>
         )}
       </CardContent>

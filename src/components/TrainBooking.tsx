@@ -52,18 +52,33 @@ export const TrainBooking = () => {
 
   const handleSearch = async () => {
     if (!fromStation || !toStation || !date) {
+      alert('Please fill in all required fields (From Station, To Station, and Date)');
       return;
     }
 
     setSearching(true);
     
-    // Filter trains based on search criteria
-    const filteredTrains = trains.filter((train: any) => 
-      train.from_station.toLowerCase().includes(fromStation.toLowerCase()) &&
-      train.to_station.toLowerCase().includes(toStation.toLowerCase())
-    );
+    try {
+      // More flexible search - check if any part of the station name matches
+      const filteredTrains = trains.filter((train: any) => {
+        const fromMatch = train.from_station.toLowerCase().includes(fromStation.toLowerCase()) ||
+                         fromStation.toLowerCase().includes(train.from_station.toLowerCase());
+        const toMatch = train.to_station.toLowerCase().includes(toStation.toLowerCase()) ||
+                       toStation.toLowerCase().includes(train.to_station.toLowerCase());
+        return fromMatch && toMatch;
+      });
+      
+      setSearchResults(filteredTrains);
+      console.log('Train search results:', filteredTrains);
+      
+      if (filteredTrains.length === 0) {
+        alert('No trains found for the selected route. Try different stations or check spelling.');
+      }
+    } catch (error) {
+      console.error('Error in train search:', error);
+      alert('Error occurred while searching. Please try again.');
+    }
     
-    setSearchResults(filteredTrains);
     setSearching(false);
   };
 
@@ -216,12 +231,51 @@ export const TrainBooking = () => {
 
         {searchResults.length > 0 && (
           <div className="mt-6 space-y-4">
-            <h3 className="text-lg font-semibold">Available Trains</h3>
+            <h3 className="text-lg font-semibold">Available Trains ({searchResults.length} found)</h3>
             {searchResults.map((train: any) => (
               <Card key={train.id} className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
                     <h4 className="font-semibold">{train.train_name} ({train.train_number})</h4>
+                    <p className="text-sm">{train.from_station} → {train.to_station}</p>
+                    <p className="text-sm">{train.departure_time} - {train.arrival_time}</p>
+                    <p className="text-sm">Duration: {train.duration_hours} hours</p>
+                    {train.amenities && (
+                      <p className="text-xs text-muted-foreground">
+                        Amenities: {train.amenities.join(', ')}
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                     <div className="space-y-1">
+                       {train.classes && Object.entries(train.classes).map(([classType, seats]: [string, any]) => (
+                         <div key={classType} className="text-sm">
+                           <span className="font-medium">{classType.toUpperCase()}: </span>
+                           <span>{seats} seats available</span>
+                         </div>
+                       ))}
+                     </div>
+                    <Button onClick={() => handleBookTrain(train)} size="sm" className="mt-2">
+                      Book Now
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Show all available trains if no search has been performed yet */}
+        {searchResults.length === 0 && trains.length > 0 && !searching && (
+          <div className="mt-6 space-y-4">
+            <h3 className="text-lg font-semibold">All Available Trains ({trains.length} total)</h3>
+            <p className="text-sm text-muted-foreground">Search above to filter trains by route</p>
+            {trains.slice(0, 3).map((train: any) => (
+              <Card key={train.id} className="p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold">{train.train_name} ({train.train_number})</h4>
+                    <p className="text-sm">{train.from_station} → {train.to_station}</p>
                     <p className="text-sm">{train.departure_time} - {train.arrival_time}</p>
                     <p className="text-sm">Duration: {train.duration_hours} hours</p>
                   </div>
@@ -241,6 +295,11 @@ export const TrainBooking = () => {
                 </div>
               </Card>
             ))}
+            {trains.length > 3 && (
+              <p className="text-sm text-muted-foreground text-center">
+                And {trains.length - 3} more trains... Use search to find specific routes.
+              </p>
+            )}
           </div>
         )}
       </CardContent>
