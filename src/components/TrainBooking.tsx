@@ -30,13 +30,23 @@ export const TrainBooking = () => {
   }, []);
 
   const fetchTrains = async () => {
-    const { data, error } = await (supabase as any)
-      .from('trains')
-      .select('*')
-      .eq('is_active', true);
-    
-    if (!error && data) {
-      setTrains(data);
+    try {
+      const { data, error } = await (supabase as any)
+        .from('trains')
+        .select('*')
+        .eq('is_active', true);
+      
+      if (error) {
+        console.error('Error fetching trains:', error);
+        return;
+      }
+      
+      if (data) {
+        setTrains(data);
+        console.log('Fetched trains:', data);
+      }
+    } catch (error) {
+      console.error('Error in fetchTrains:', error);
     }
   };
 
@@ -181,7 +191,15 @@ export const TrainBooking = () => {
                     <p className="text-sm">Duration: {train.duration_hours} hours</p>
                   </div>
                   <div className="text-right">
-                    <Button onClick={() => handleBookTrain(train)} size="sm">
+                    <div className="space-y-1">
+                      {train.classes && Object.entries(train.classes).map(([classType, classInfo]: [string, any]) => (
+                        <div key={classType} className="text-sm">
+                          <span className="font-medium">{classType.toUpperCase()}: </span>
+                          <span className="font-bold">₹{classInfo.price}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Button onClick={() => handleBookTrain(train)} size="sm" className="mt-2">
                       Book Now
                     </Button>
                   </div>

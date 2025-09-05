@@ -32,13 +32,23 @@ export const FlightBooking = () => {
   }, []);
 
   const fetchFlights = async () => {
-    const { data, error } = await (supabase as any)
-      .from('flights')
-      .select('*')
-      .eq('is_active', true);
-    
-    if (!error && data) {
-      setFlights(data);
+    try {
+      const { data, error } = await (supabase as any)
+        .from('flights')
+        .select('*')
+        .eq('is_active', true);
+      
+      if (error) {
+        console.error('Error fetching flights:', error);
+        return;
+      }
+      
+      if (data) {
+        setFlights(data);
+        console.log('Fetched flights:', data);
+      }
+    } catch (error) {
+      console.error('Error in fetchFlights:', error);
     }
   };
 

@@ -29,13 +29,23 @@ export const BusBooking = () => {
   }, []);
 
   const fetchBuses = async () => {
-    const { data, error } = await (supabase as any)
-      .from('buses')
-      .select('*')
-      .eq('is_active', true);
-    
-    if (!error && data) {
-      setBuses(data);
+    try {
+      const { data, error } = await (supabase as any)
+        .from('buses')
+        .select('*')
+        .eq('is_active', true);
+      
+      if (error) {
+        console.error('Error fetching buses:', error);
+        return;
+      }
+      
+      if (data) {
+        setBuses(data);
+        console.log('Fetched buses:', data);
+      }
+    } catch (error) {
+      console.error('Error in fetchBuses:', error);
     }
   };
 
