@@ -2,6 +2,7 @@ import { TripHero } from "@/components/TripHero";
 import { FeaturedDestinations } from "@/components/FeaturedDestinations";
 import { HowItWorks } from "@/components/HowItWorks";
 import { BookingNavigation } from "@/components/BookingNavigation";
+import { Header } from "@/components/Header";
 import { useEffect } from "react";
 
 const Index = () => {
@@ -42,6 +43,7 @@ const Index = () => {
 
   return (
     <main className="min-h-screen pb-20">
+      <Header />
       <TripHero />
       <BookingNavigation />
       <FeaturedDestinations />

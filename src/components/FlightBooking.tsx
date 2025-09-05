@@ -7,11 +7,12 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarIcon, Plane, Users, ArrowLeftRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export const FlightBooking = () => {
   const [departureDate, setDepartureDate] = useState<Date>();
@@ -19,16 +20,51 @@ export const FlightBooking = () => {
   const [tripType, setTripType] = useState("one-way");
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
+  const [flights, setFlights] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleSearch = () => {
+  useEffect(() => {
+    fetchFlights();
+  }, []);
+
+  const fetchFlights = async () => {
+    const { data, error } = await (supabase as any)
+      .from('flights')
+      .select('*')
+      .eq('is_active', true);
+    
+    if (!error && data) {
+      setFlights(data);
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!fromCity || !toCity || !departureDate) {
+      return;
+    }
+
+    setSearching(true);
+    
+    // Filter flights based on search criteria
+    const filteredFlights = flights.filter((flight: any) => 
+      flight.from_airport.toLowerCase().includes(fromCity.toLowerCase()) &&
+      flight.to_airport.toLowerCase().includes(toCity.toLowerCase())
+    );
+    
+    setSearchResults(filteredFlights);
+    setSearching(false);
+  };
+
+  const handleBookFlight = (flight: any) => {
     if (!user) {
       navigate("/auth", { state: { from: location } });
       return;
     }
-    // Proceed with flight search
+    // Proceed with booking
   };
 
   const airports = [
@@ -171,10 +207,34 @@ export const FlightBooking = () => {
             </Select>
           </div>
 
-          <Button className="w-full" size="lg" onClick={handleSearch}>
-            Search Flights
+          <Button className="w-full" size="lg" onClick={handleSearch} disabled={searching}>
+            {searching ? "Searching..." : "Search Flights"}
           </Button>
         </form>
+
+        {searchResults.length > 0 && (
+          <div className="mt-6 space-y-4">
+            <h3 className="text-lg font-semibold">Available Flights</h3>
+            {searchResults.map((flight: any) => (
+              <Card key={flight.id} className="p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold">{flight.airline_name} - {flight.flight_number}</h4>
+                    <p className="text-sm">{new Date(flight.departure_time).toLocaleString()} - {new Date(flight.arrival_time).toLocaleString()}</p>
+                    <p className="text-sm">Duration: {flight.duration_hours} hours</p>
+                    <p className="text-sm">Available seats: {flight.available_seats}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold">₹{flight.price}</p>
+                    <Button onClick={() => handleBookFlight(flight)} size="sm">
+                      Book Now
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -7,26 +7,62 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarIcon, Train, Users } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export const TrainBooking = () => {
   const [date, setDate] = useState<Date>();
   const [fromStation, setFromStation] = useState("");
   const [toStation, setToStation] = useState("");
+  const [trains, setTrains] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleSearch = () => {
+  useEffect(() => {
+    fetchTrains();
+  }, []);
+
+  const fetchTrains = async () => {
+    const { data, error } = await (supabase as any)
+      .from('trains')
+      .select('*')
+      .eq('is_active', true);
+    
+    if (!error && data) {
+      setTrains(data);
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!fromStation || !toStation || !date) {
+      return;
+    }
+
+    setSearching(true);
+    
+    // Filter trains based on search criteria
+    const filteredTrains = trains.filter((train: any) => 
+      train.from_station.toLowerCase().includes(fromStation.toLowerCase()) &&
+      train.to_station.toLowerCase().includes(toStation.toLowerCase())
+    );
+    
+    setSearchResults(filteredTrains);
+    setSearching(false);
+  };
+
+  const handleBookTrain = (train: any) => {
     if (!user) {
       navigate("/auth", { state: { from: location } });
       return;
     }
-    // Proceed with train search
+    // Proceed with booking
   };
 
   const stations = [
@@ -128,10 +164,32 @@ export const TrainBooking = () => {
             </div>
           </div>
 
-          <Button className="w-full" size="lg" onClick={handleSearch}>
-            Search Trains
+          <Button className="w-full" size="lg" onClick={handleSearch} disabled={searching}>
+            {searching ? "Searching..." : "Search Trains"}
           </Button>
         </form>
+
+        {searchResults.length > 0 && (
+          <div className="mt-6 space-y-4">
+            <h3 className="text-lg font-semibold">Available Trains</h3>
+            {searchResults.map((train: any) => (
+              <Card key={train.id} className="p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold">{train.train_name} ({train.train_number})</h4>
+                    <p className="text-sm">{train.departure_time} - {train.arrival_time}</p>
+                    <p className="text-sm">Duration: {train.duration_hours} hours</p>
+                  </div>
+                  <div className="text-right">
+                    <Button onClick={() => handleBookTrain(train)} size="sm">
+                      Book Now
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

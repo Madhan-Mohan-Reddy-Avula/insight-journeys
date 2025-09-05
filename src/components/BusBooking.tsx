@@ -6,26 +6,62 @@ import { SearchableInput } from "./SearchableInput";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, MapPin, Users } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export const BusBooking = () => {
   const [date, setDate] = useState<Date>();
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
+  const [buses, setBuses] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleSearch = () => {
+  useEffect(() => {
+    fetchBuses();
+  }, []);
+
+  const fetchBuses = async () => {
+    const { data, error } = await (supabase as any)
+      .from('buses')
+      .select('*')
+      .eq('is_active', true);
+    
+    if (!error && data) {
+      setBuses(data);
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!fromCity || !toCity || !date) {
+      return;
+    }
+
+    setSearching(true);
+    
+    // Filter buses based on search criteria
+    const filteredBuses = buses.filter((bus: any) => 
+      bus.from_city.toLowerCase().includes(fromCity.toLowerCase()) &&
+      bus.to_city.toLowerCase().includes(toCity.toLowerCase())
+    );
+    
+    setSearchResults(filteredBuses);
+    setSearching(false);
+  };
+
+  const handleBookBus = (bus: any) => {
     if (!user) {
       navigate("/auth", { state: { from: location } });
       return;
     }
-    // Proceed with bus search
+    // Proceed with booking
   };
 
   const cities = [
@@ -111,10 +147,34 @@ export const BusBooking = () => {
             </div>
           </div>
 
-          <Button className="w-full" size="lg" onClick={handleSearch}>
-            Search Buses
+          <Button className="w-full" size="lg" onClick={handleSearch} disabled={searching}>
+            {searching ? "Searching..." : "Search Buses"}
           </Button>
         </form>
+
+        {searchResults.length > 0 && (
+          <div className="mt-6 space-y-4">
+            <h3 className="text-lg font-semibold">Available Buses</h3>
+            {searchResults.map((bus: any) => (
+              <Card key={bus.id} className="p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold">{bus.operator_name}</h4>
+                    <p className="text-sm text-muted-foreground">{bus.bus_type}</p>
+                    <p className="text-sm">{bus.departure_time} - {bus.arrival_time}</p>
+                    <p className="text-sm">Available seats: {bus.available_seats}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold">₹{bus.price}</p>
+                    <Button onClick={() => handleBookBus(bus)} size="sm">
+                      Book Now
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
