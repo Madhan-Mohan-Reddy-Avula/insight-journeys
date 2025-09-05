@@ -246,7 +246,7 @@ export const HotelBooking = () => {
             </div>
           </div>
 
-          <Button className="w-full" size="lg" onClick={handleSearch} disabled={searching}>
+          <Button type="button" className="w-full" size="lg" onClick={handleSearch} disabled={searching}>
             {searching ? "Searching..." : "Search Hotels"}
           </Button>
         </form>

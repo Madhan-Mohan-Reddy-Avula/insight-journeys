@@ -207,7 +207,7 @@ export const BusBooking = () => {
             </div>
           </div>
 
-          <Button className="w-full" size="lg" onClick={handleSearch} disabled={searching}>
+          <Button type="button" className="w-full" size="lg" onClick={handleSearch} disabled={searching}>
             {searching ? "Searching..." : "Search Buses"}
           </Button>
         </form>
