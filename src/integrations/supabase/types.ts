@@ -14,7 +14,311 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          booking_details: Json | null
+          booking_type: string
+          created_at: string
+          departure_date: string | null
+          from_location: string | null
+          id: string
+          passengers: number
+          return_date: string | null
+          status: string
+          to_location: string | null
+          total_amount: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_details?: Json | null
+          booking_type: string
+          created_at?: string
+          departure_date?: string | null
+          from_location?: string | null
+          id?: string
+          passengers?: number
+          return_date?: string | null
+          status?: string
+          to_location?: string | null
+          total_amount?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_details?: Json | null
+          booking_type?: string
+          created_at?: string
+          departure_date?: string | null
+          from_location?: string | null
+          id?: string
+          passengers?: number
+          return_date?: string | null
+          status?: string
+          to_location?: string | null
+          total_amount?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      buses: {
+        Row: {
+          amenities: string[] | null
+          arrival_time: string
+          available_seats: number
+          bus_number: string
+          bus_type: string
+          created_at: string
+          departure_time: string
+          duration_hours: number
+          from_city: string
+          id: string
+          is_active: boolean
+          operator_name: string
+          price: number
+          to_city: string
+        }
+        Insert: {
+          amenities?: string[] | null
+          arrival_time: string
+          available_seats?: number
+          bus_number: string
+          bus_type: string
+          created_at?: string
+          departure_time: string
+          duration_hours: number
+          from_city: string
+          id?: string
+          is_active?: boolean
+          operator_name: string
+          price: number
+          to_city: string
+        }
+        Update: {
+          amenities?: string[] | null
+          arrival_time?: string
+          available_seats?: number
+          bus_number?: string
+          bus_type?: string
+          created_at?: string
+          departure_time?: string
+          duration_hours?: number
+          from_city?: string
+          id?: string
+          is_active?: boolean
+          operator_name?: string
+          price?: number
+          to_city?: string
+        }
+        Relationships: []
+      }
+      flights: {
+        Row: {
+          aircraft_type: string | null
+          airline_name: string
+          arrival_time: string
+          available_seats: number
+          created_at: string
+          departure_time: string
+          duration_hours: number
+          flight_number: string
+          from_airport: string
+          id: string
+          is_active: boolean
+          price: number
+          to_airport: string
+        }
+        Insert: {
+          aircraft_type?: string | null
+          airline_name: string
+          arrival_time: string
+          available_seats?: number
+          created_at?: string
+          departure_time: string
+          duration_hours: number
+          flight_number: string
+          from_airport: string
+          id?: string
+          is_active?: boolean
+          price: number
+          to_airport: string
+        }
+        Update: {
+          aircraft_type?: string | null
+          airline_name?: string
+          arrival_time?: string
+          available_seats?: number
+          created_at?: string
+          departure_time?: string
+          duration_hours?: number
+          flight_number?: string
+          from_airport?: string
+          id?: string
+          is_active?: boolean
+          price?: number
+          to_airport?: string
+        }
+        Relationships: []
+      }
+      hotel_contacts: {
+        Row: {
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          hotel_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          hotel_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          hotel_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hotel_contacts_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hotels: {
+        Row: {
+          amenities: string[] | null
+          available_rooms: number
+          city: string
+          created_at: string
+          description: string | null
+          hotel_name: string
+          id: string
+          images: string[] | null
+          is_active: boolean
+          location: string
+          price_per_night: number
+          star_rating: number | null
+        }
+        Insert: {
+          amenities?: string[] | null
+          available_rooms?: number
+          city: string
+          created_at?: string
+          description?: string | null
+          hotel_name: string
+          id?: string
+          images?: string[] | null
+          is_active?: boolean
+          location: string
+          price_per_night: number
+          star_rating?: number | null
+        }
+        Update: {
+          amenities?: string[] | null
+          available_rooms?: number
+          city?: string
+          created_at?: string
+          description?: string | null
+          hotel_name?: string
+          id?: string
+          images?: string[] | null
+          is_active?: boolean
+          location?: string
+          price_per_night?: number
+          star_rating?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trains: {
+        Row: {
+          amenities: string[] | null
+          arrival_time: string
+          classes: Json
+          created_at: string
+          departure_time: string
+          duration_hours: number
+          from_station: string
+          id: string
+          is_active: boolean
+          to_station: string
+          train_name: string
+          train_number: string
+        }
+        Insert: {
+          amenities?: string[] | null
+          arrival_time: string
+          classes: Json
+          created_at?: string
+          departure_time: string
+          duration_hours: number
+          from_station: string
+          id?: string
+          is_active?: boolean
+          to_station: string
+          train_name: string
+          train_number: string
+        }
+        Update: {
+          amenities?: string[] | null
+          arrival_time?: string
+          classes?: Json
+          created_at?: string
+          departure_time?: string
+          duration_hours?: number
+          from_station?: string
+          id?: string
+          is_active?: boolean
+          to_station?: string
+          train_name?: string
+          train_number?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
