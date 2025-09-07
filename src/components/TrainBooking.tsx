@@ -25,9 +25,9 @@ export const TrainBooking = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    fetchTrains();
-  }, []);
+  // useEffect(() => {
+  //   fetchTrains();
+  // }, []);
 
   const fetchTrains = async () => {
     try {

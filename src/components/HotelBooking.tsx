@@ -25,9 +25,9 @@ export const HotelBooking = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    fetchHotels();
-  }, []);
+  // useEffect(() => {
+  //   fetchHotels();
+  // }, []);
 
   const fetchHotels = async () => {
     try {
