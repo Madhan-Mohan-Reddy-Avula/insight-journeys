@@ -6,7 +6,7 @@ import { SearchableInput } from "./SearchableInput";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarIcon, Plane, Users, ArrowLeftRight } from "lucide-react";
+import { CalendarIcon, Plane, Users, ArrowLeftRight, ArrowUpDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -137,6 +137,12 @@ export const FlightBooking = () => {
     ...flights.map((flight: any) => flight.to_airport)
   ])).filter(Boolean).sort();
 
+  const handleSwapCities = () => {
+    const temp = fromCity;
+    setFromCity(toCity);
+    setToCity(temp);
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -160,7 +166,7 @@ export const FlightBooking = () => {
             </Select>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
             <div className="space-y-2">
               <Label htmlFor="from-flight">From</Label>
               <SearchableInput
@@ -171,6 +177,18 @@ export const FlightBooking = () => {
                 onChange={setFromCity}
               />
             </div>
+            <div className="hidden md:flex absolute left-1/2 top-8 transform -translate-x-1/2 z-10">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleSwapCities}
+                className="rounded-full h-8 w-8 bg-background border-2"
+                title="Swap cities"
+              >
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="to-flight">To</Label>
               <SearchableInput
@@ -180,6 +198,18 @@ export const FlightBooking = () => {
                 value={toCity}
                 onChange={setToCity}
               />
+            </div>
+            <div className="md:hidden col-span-1 flex justify-center">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleSwapCities}
+                className="flex items-center gap-2"
+              >
+                <ArrowUpDown className="h-4 w-4" />
+                Swap
+              </Button>
             </div>
           </div>
 

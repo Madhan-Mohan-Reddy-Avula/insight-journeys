@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { SearchableInput } from "./SearchableInput";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, MapPin, Users } from "lucide-react";
+import { CalendarIcon, MapPin, Users, ArrowUpDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -132,6 +132,12 @@ export const BusBooking = () => {
     ...buses.map((bus: any) => bus.to_city)
   ])).filter(Boolean).sort();
 
+  const handleSwapCities = () => {
+    const temp = fromCity;
+    setFromCity(toCity);
+    setToCity(temp);
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -142,7 +148,7 @@ export const BusBooking = () => {
       </CardHeader>
       <CardContent>
         <form className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
             <div className="space-y-2">
               <Label htmlFor="from-bus">From</Label>
               <SearchableInput
@@ -153,6 +159,18 @@ export const BusBooking = () => {
                 onChange={setFromCity}
               />
             </div>
+            <div className="hidden md:flex absolute left-1/2 top-8 transform -translate-x-1/2 z-10">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleSwapCities}
+                className="rounded-full h-8 w-8 bg-background border-2"
+                title="Swap cities"
+              >
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="to-bus">To</Label>
               <SearchableInput
@@ -162,6 +180,18 @@ export const BusBooking = () => {
                 value={toCity}
                 onChange={setToCity}
               />
+            </div>
+            <div className="md:hidden col-span-1 flex justify-center">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleSwapCities}
+                className="flex items-center gap-2"
+              >
+                <ArrowUpDown className="h-4 w-4" />
+                Swap
+              </Button>
             </div>
           </div>
 

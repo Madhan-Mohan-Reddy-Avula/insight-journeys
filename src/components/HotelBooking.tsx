@@ -6,7 +6,7 @@ import { SearchableInput } from "./SearchableInput";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarIcon, Hotel, Users } from "lucide-react";
+import { CalendarIcon, Hotel, Users, ArrowUpDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -134,6 +134,12 @@ export const HotelBooking = () => {
     ...hotels.map((hotel: any) => hotel.hotel_name)
   ])).filter(Boolean).sort();
 
+  const handleSwapDates = () => {
+    const temp = checkInDate;
+    setCheckInDate(checkOutDate);
+    setCheckOutDate(temp);
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -155,7 +161,7 @@ export const HotelBooking = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
             <div className="space-y-2">
               <Label>Check-in Date</Label>
               <Popover>
@@ -181,6 +187,18 @@ export const HotelBooking = () => {
                 </PopoverContent>
               </Popover>
             </div>
+            <div className="hidden md:flex absolute left-1/2 top-8 transform -translate-x-1/2 z-10">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleSwapDates}
+                className="rounded-full h-8 w-8 bg-background border-2"
+                title="Swap dates"
+              >
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </div>
             <div className="space-y-2">
               <Label>Check-out Date</Label>
               <Popover>
@@ -205,6 +223,18 @@ export const HotelBooking = () => {
                   />
                 </PopoverContent>
               </Popover>
+            </div>
+            <div className="md:hidden col-span-1 flex justify-center">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleSwapDates}
+                className="flex items-center gap-2"
+              >
+                <ArrowUpDown className="h-4 w-4" />
+                Swap Dates
+              </Button>
             </div>
           </div>
 

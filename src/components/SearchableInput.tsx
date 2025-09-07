@@ -44,6 +44,12 @@ export const SearchableInput = ({
     setOpen(newValue.length > 0 && filteredSuggestions.length > 0);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') {
+      setOpen(false);
+    }
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -54,6 +60,7 @@ export const SearchableInput = ({
             value={inputValue}
             onChange={(e) => handleInputChange(e.target.value)}
             onFocus={() => setOpen(inputValue.length > 0 && filteredSuggestions.length > 0)}
+            onKeyDown={handleKeyDown}
             className="w-full"
           />
           {filteredSuggestions.length > 0 && inputValue.length > 0 && (

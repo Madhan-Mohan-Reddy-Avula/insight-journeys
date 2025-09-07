@@ -6,7 +6,7 @@ import { SearchableInput } from "./SearchableInput";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarIcon, Train, Users } from "lucide-react";
+import { CalendarIcon, Train, Users, ArrowUpDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -134,6 +134,12 @@ export const TrainBooking = () => {
     ...trains.map((train: any) => train.to_station)
   ])).filter(Boolean).sort();
 
+  const handleSwapStations = () => {
+    const temp = fromStation;
+    setFromStation(toStation);
+    setToStation(temp);
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -144,7 +150,7 @@ export const TrainBooking = () => {
       </CardHeader>
       <CardContent>
         <form className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
             <div className="space-y-2">
               <Label htmlFor="from-train">From Station</Label>
               <SearchableInput
@@ -155,6 +161,18 @@ export const TrainBooking = () => {
                 onChange={setFromStation}
               />
             </div>
+            <div className="hidden md:flex absolute left-1/2 top-8 transform -translate-x-1/2 z-10">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleSwapStations}
+                className="rounded-full h-8 w-8 bg-background border-2"
+                title="Swap stations"
+              >
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="to-train">To Station</Label>
               <SearchableInput
@@ -164,6 +182,18 @@ export const TrainBooking = () => {
                 value={toStation}
                 onChange={setToStation}
               />
+            </div>
+            <div className="md:hidden col-span-1 flex justify-center">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleSwapStations}
+                className="flex items-center gap-2"
+              >
+                <ArrowUpDown className="h-4 w-4" />
+                Swap
+              </Button>
             </div>
           </div>
 
