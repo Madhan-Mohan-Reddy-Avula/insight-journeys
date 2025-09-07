@@ -161,8 +161,8 @@ export const HotelBooking = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <div className="space-y-2 md:col-span-5">
               <Label>Check-in Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -187,19 +187,19 @@ export const HotelBooking = () => {
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="hidden md:flex absolute left-1/2 top-8 transform -translate-x-1/2 z-10">
+            <div className="md:col-span-2 flex justify-center">
               <Button
                 type="button"
                 variant="outline"
                 size="icon"
                 onClick={handleSwapDates}
-                className="rounded-full h-8 w-8 bg-background border-2"
+                className="rounded-full h-10 w-10 bg-background border-2 shadow-sm"
                 title="Swap dates"
               >
                 <ArrowUpDown className="h-4 w-4" />
               </Button>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 md:col-span-5">
               <Label>Check-out Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -223,18 +223,6 @@ export const HotelBooking = () => {
                   />
                 </PopoverContent>
               </Popover>
-            </div>
-            <div className="md:hidden col-span-1 flex justify-center">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleSwapDates}
-                className="flex items-center gap-2"
-              >
-                <ArrowUpDown className="h-4 w-4" />
-                Swap Dates
-              </Button>
             </div>
           </div>
 

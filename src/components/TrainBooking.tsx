@@ -150,8 +150,8 @@ export const TrainBooking = () => {
       </CardHeader>
       <CardContent>
         <form className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <div className="space-y-2 md:col-span-5">
               <Label htmlFor="from-train">From Station</Label>
               <SearchableInput
                 id="from-train"
@@ -161,19 +161,19 @@ export const TrainBooking = () => {
                 onChange={setFromStation}
               />
             </div>
-            <div className="hidden md:flex absolute left-1/2 top-8 transform -translate-x-1/2 z-10">
+            <div className="md:col-span-2 flex justify-center">
               <Button
                 type="button"
                 variant="outline"
                 size="icon"
                 onClick={handleSwapStations}
-                className="rounded-full h-8 w-8 bg-background border-2"
+                className="rounded-full h-10 w-10 bg-background border-2 shadow-sm"
                 title="Swap stations"
               >
                 <ArrowUpDown className="h-4 w-4" />
               </Button>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 md:col-span-5">
               <Label htmlFor="to-train">To Station</Label>
               <SearchableInput
                 id="to-train"
@@ -182,18 +182,6 @@ export const TrainBooking = () => {
                 value={toStation}
                 onChange={setToStation}
               />
-            </div>
-            <div className="md:hidden col-span-1 flex justify-center">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleSwapStations}
-                className="flex items-center gap-2"
-              >
-                <ArrowUpDown className="h-4 w-4" />
-                Swap
-              </Button>
             </div>
           </div>
 

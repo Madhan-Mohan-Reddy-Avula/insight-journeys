@@ -166,8 +166,8 @@ export const FlightBooking = () => {
             </Select>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <div className="space-y-2 md:col-span-5">
               <Label htmlFor="from-flight">From</Label>
               <SearchableInput
                 id="from-flight"
@@ -177,19 +177,19 @@ export const FlightBooking = () => {
                 onChange={setFromCity}
               />
             </div>
-            <div className="hidden md:flex absolute left-1/2 top-8 transform -translate-x-1/2 z-10">
+            <div className="md:col-span-2 flex justify-center">
               <Button
                 type="button"
                 variant="outline"
                 size="icon"
                 onClick={handleSwapCities}
-                className="rounded-full h-8 w-8 bg-background border-2"
+                className="rounded-full h-10 w-10 bg-background border-2 shadow-sm"
                 title="Swap cities"
               >
                 <ArrowUpDown className="h-4 w-4" />
               </Button>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 md:col-span-5">
               <Label htmlFor="to-flight">To</Label>
               <SearchableInput
                 id="to-flight"
@@ -198,18 +198,6 @@ export const FlightBooking = () => {
                 value={toCity}
                 onChange={setToCity}
               />
-            </div>
-            <div className="md:hidden col-span-1 flex justify-center">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleSwapCities}
-                className="flex items-center gap-2"
-              >
-                <ArrowUpDown className="h-4 w-4" />
-                Swap
-              </Button>
             </div>
           </div>
 
