@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +22,11 @@ export const SearchableInput = ({
 }: SearchableInputProps) => {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
+
+  // Sync internal state with external value prop
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
 
   const filteredSuggestions = suggestions.filter(suggestion =>
     suggestion.toLowerCase().includes(inputValue.toLowerCase())

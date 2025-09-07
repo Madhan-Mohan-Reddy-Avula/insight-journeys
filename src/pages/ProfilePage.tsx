@@ -39,7 +39,7 @@ const ProfilePage = () => {
     if (!user) return;
     
     setProfileLoading(true);
-    const { data: profile, error } = await (supabase as any)
+    const { data: profile, error } = await supabase
       .from('profiles')
       .select('display_name, email, phone')
       .eq('user_id', user.id)
@@ -67,7 +67,7 @@ const ProfilePage = () => {
     
     setLoading(true);
     
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('profiles')
       .upsert({
         user_id: user.id,
