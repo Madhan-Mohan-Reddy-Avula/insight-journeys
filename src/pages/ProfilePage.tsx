@@ -74,6 +74,8 @@ const ProfilePage = () => {
         display_name: displayName,
         email: email,
         phone: phone,
+      }, {
+        onConflict: 'user_id'
       });
 
     if (error) {
