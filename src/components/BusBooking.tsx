@@ -24,9 +24,9 @@ export const BusBooking = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // useEffect(() => {
-  //   fetchBuses();
-  // }, []);
+  useEffect(() => {
+    fetchBuses();
+  }, []);
 
   const fetchBuses = async () => {
     try {

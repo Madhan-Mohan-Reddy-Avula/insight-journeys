@@ -27,9 +27,9 @@ export const FlightBooking = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // useEffect(() => {
-  //   fetchFlights();
-  // }, []);
+  useEffect(() => {
+    fetchFlights();
+  }, []);
 
   const fetchFlights = async () => {
     try {
