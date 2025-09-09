@@ -20,7 +20,6 @@ export const BusBooking = () => {
   const [buses, setBuses] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
-  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -81,49 +80,20 @@ export const BusBooking = () => {
     setSearching(false);
   };
 
-  const handleBookBus = async (bus: any) => {
-    if (!user) {
-      navigate("/auth", { state: { from: location } });
-      return;
-    }
+  const handleViewBusDetails = (bus: any) => {
+    const searchData = {
+      fromCity,
+      toCity,
+      date,
+      passengers: parseInt((document.getElementById('passengers-bus') as HTMLInputElement)?.value || '1')
+    };
     
-    try {
-      const { data, error } = await (supabase as any)
-        .from('bookings')
-        .insert([
-          {
-            user_id: user.id,
-            booking_type: 'bus',
-            from_location: fromCity,
-            to_location: toCity,
-            departure_date: date,
-            passengers: parseInt((document.getElementById('passengers-bus') as HTMLInputElement)?.value || '1'),
-            total_amount: bus.price,
-            status: 'pending',
-            booking_details: {
-              bus_id: bus.id,
-              operator_name: bus.operator_name,
-              bus_type: bus.bus_type,
-              departure_time: bus.departure_time,
-              arrival_time: bus.arrival_time,
-              bus_number: bus.bus_number
-            }
-          }
-        ])
-        .select();
-
-      if (error) {
-        console.error('Error creating booking:', error);
-        alert('Failed to create booking. Please try again.');
-        return;
-      }
-
-      alert('Booking created successfully!');
-      console.log('Booking created:', data);
-    } catch (error) {
-      console.error('Error in handleBookBus:', error);
-      alert('Failed to create booking. Please try again.');
-    }
+    navigate('/bus-details', { 
+      state: { 
+        bus, 
+        searchData 
+      } 
+    });
   };
 
   // Extract unique cities from database for suggestions
@@ -250,8 +220,8 @@ export const BusBooking = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold">₹{bus.price}</p>
-                    <Button onClick={() => handleBookBus(bus)} size="sm">
-                      Book Now
+                    <Button onClick={() => handleViewBusDetails(bus)} size="sm">
+                      View Details
                     </Button>
                   </div>
                 </div>
@@ -277,8 +247,8 @@ export const BusBooking = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold">₹{bus.price}</p>
-                    <Button onClick={() => handleBookBus(bus)} size="sm">
-                      Book Now
+                    <Button onClick={() => handleViewBusDetails(bus)} size="sm">
+                      View Details
                     </Button>
                   </div>
                 </div>

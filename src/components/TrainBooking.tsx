@@ -82,50 +82,20 @@ export const TrainBooking = () => {
     setSearching(false);
   };
 
-  const handleBookTrain = async (train: any) => {
-    if (!user) {
-      navigate("/auth", { state: { from: location } });
-      return;
-    }
+  const handleViewTrainDetails = (train: any) => {
+    const searchData = {
+      fromStation,
+      toStation,
+      date,
+      passengers: parseInt((document.getElementById('passengers-train') as HTMLInputElement)?.value || '1')
+    };
     
-    try {
-      const { data, error } = await (supabase as any)
-        .from('bookings')
-        .insert([
-          {
-            user_id: user.id,
-            booking_type: 'train',
-            from_location: fromStation,
-            to_location: toStation,
-            departure_date: date,
-            passengers: parseInt((document.getElementById('passengers-train') as HTMLInputElement)?.value || '1'),
-            total_amount: train.classes?.sleeper?.price || train.classes?.['3ac']?.price || 0,
-            status: 'pending',
-            booking_details: {
-              train_id: train.id,
-              train_name: train.train_name,
-              train_number: train.train_number,
-              departure_time: train.departure_time,
-              arrival_time: train.arrival_time,
-              duration_hours: train.duration_hours,
-              classes: train.classes
-            }
-          }
-        ])
-        .select();
-
-      if (error) {
-        console.error('Error creating booking:', error);
-        alert('Failed to create booking. Please try again.');
-        return;
-      }
-
-      alert('Booking created successfully!');
-      console.log('Booking created:', data);
-    } catch (error) {
-      console.error('Error in handleBookTrain:', error);
-      alert('Failed to create booking. Please try again.');
-    }
+    navigate('/train-details', { 
+      state: { 
+        train, 
+        searchData 
+      } 
+    });
   };
 
   // Extract unique stations from database for suggestions
@@ -273,8 +243,8 @@ export const TrainBooking = () => {
                          </div>
                        ))}
                      </div>
-                    <Button onClick={() => handleBookTrain(train)} size="sm" className="mt-2">
-                      Book Now
+                    <Button onClick={() => handleViewTrainDetails(train)} size="sm" className="mt-2">
+                      View Details
                     </Button>
                   </div>
                 </div>
@@ -306,8 +276,8 @@ export const TrainBooking = () => {
                          </div>
                        ))}
                      </div>
-                    <Button onClick={() => handleBookTrain(train)} size="sm" className="mt-2">
-                      Book Now
+                    <Button onClick={() => handleViewTrainDetails(train)} size="sm" className="mt-2">
+                      View Details
                     </Button>
                   </div>
                 </div>

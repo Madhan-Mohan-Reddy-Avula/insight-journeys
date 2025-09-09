@@ -14,6 +14,10 @@ import TravelAIPage from "./pages/TravelAIPage";
 import HotelBookingPage from "./pages/HotelBookingPage";
 import AuthPage from "./pages/AuthPage";
 import ProfilePage from "./pages/ProfilePage";
+import BusDetailsPage from "./pages/BusDetailsPage";
+import TrainDetailsPage from "./pages/TrainDetailsPage";
+import FlightDetailsPage from "./pages/FlightDetailsPage";
+import HotelDetailsPage from "./pages/HotelDetailsPage";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +36,10 @@ const App = () => (
               <Route path="/train-booking" element={<TrainBookingPage />} />
               <Route path="/flight-booking" element={<FlightBookingPage />} />
               <Route path="/hotel-booking" element={<HotelBookingPage />} />
+              <Route path="/bus-details" element={<BusDetailsPage />} />
+              <Route path="/train-details" element={<TrainDetailsPage />} />
+              <Route path="/flight-details" element={<FlightDetailsPage />} />
+              <Route path="/hotel-details" element={<HotelDetailsPage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

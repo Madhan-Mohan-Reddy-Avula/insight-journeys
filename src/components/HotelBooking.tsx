@@ -83,49 +83,20 @@ export const HotelBooking = () => {
     setSearching(false);
   };
 
-  const handleBookHotel = async (hotel: any) => {
-    if (!user) {
-      navigate("/auth", { state: { from: location } });
-      return;
-    }
+  const handleViewHotelDetails = (hotel: any) => {
+    const searchData = {
+      destination,
+      checkInDate,
+      checkOutDate,
+      guests: parseInt((document.getElementById('guests-hotel') as HTMLInputElement)?.value || '1')
+    };
     
-    try {
-      const { data, error } = await (supabase as any)
-        .from('bookings')
-        .insert([
-          {
-            user_id: user.id,
-            booking_type: 'hotel',
-            from_location: destination,
-            departure_date: checkInDate,
-            return_date: checkOutDate,
-            passengers: parseInt((document.getElementById('guests-hotel') as HTMLInputElement)?.value || '1'),
-            total_amount: hotel.price_per_night,
-            status: 'pending',
-            booking_details: {
-              hotel_id: hotel.id,
-              hotel_name: hotel.hotel_name,
-              location: hotel.location,
-              star_rating: hotel.star_rating,
-              price_per_night: hotel.price_per_night,
-              amenities: hotel.amenities
-            }
-          }
-        ])
-        .select();
-
-      if (error) {
-        console.error('Error creating booking:', error);
-        alert('Failed to create booking. Please try again.');
-        return;
-      }
-
-      alert('Booking created successfully!');
-      console.log('Booking created:', data);
-    } catch (error) {
-      console.error('Error in handleBookHotel:', error);
-      alert('Failed to create booking. Please try again.');
-    }
+    navigate('/hotel-details', { 
+      state: { 
+        hotel, 
+        searchData 
+      } 
+    });
   };
 
   // Extract unique cities from database for suggestions
@@ -290,8 +261,8 @@ export const HotelBooking = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold">₹{hotel.price_per_night}/night</p>
-                    <Button onClick={() => handleBookHotel(hotel)} size="sm">
-                      Book Now
+                    <Button onClick={() => handleViewHotelDetails(hotel)} size="sm">
+                      View Details
                     </Button>
                   </div>
                 </div>
@@ -318,8 +289,8 @@ export const HotelBooking = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold">₹{hotel.price_per_night}/night</p>
-                    <Button onClick={() => handleBookHotel(hotel)} size="sm">
-                      Book Now
+                    <Button onClick={() => handleViewHotelDetails(hotel)} size="sm">
+                      View Details
                     </Button>
                   </div>
                 </div>
