@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, User, Mail, Phone, Eye, EyeOff, Lock } from "lucide-react";
+import { Loader2, ArrowLeft, User, Mail, Phone, Eye, EyeOff, Lock, Calendar, MapPin, Plane, Train, Bus, Hotel } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -19,8 +19,10 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [bookingsLoading, setBookingsLoading] = useState(true);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [bookings, setBookings] = useState<any[]>([]);
   
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -33,6 +35,7 @@ const ProfilePage = () => {
     }
     
     fetchProfile();
+    fetchBookings();
   }, [user, navigate]);
 
   const fetchProfile = async () => {
@@ -59,6 +62,28 @@ const ProfilePage = () => {
       setEmail(user.email || "");
     }
     setProfileLoading(false);
+  };
+
+  const fetchBookings = async () => {
+    if (!user) return;
+    
+    setBookingsLoading(true);
+    const { data: userBookings, error } = await supabase
+      .from('bookings')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      toast({
+        title: "Error loading bookings",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      setBookings(userBookings || []);
+    }
+    setBookingsLoading(false);
   };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -138,6 +163,32 @@ const ProfilePage = () => {
     setPasswordLoading(false);
   };
 
+  const getBookingIcon = (type: string) => {
+    switch (type) {
+      case 'flight': return <Plane className="h-4 w-4" />;
+      case 'train': return <Train className="h-4 w-4" />;
+      case 'bus': return <Bus className="h-4 w-4" />;
+      case 'hotel': return <Hotel className="h-4 w-4" />;
+      default: return <Calendar className="h-4 w-4" />;
+    }
+  };
+
+  const formatBookingTitle = (booking: any) => {
+    const details = booking.booking_details;
+    switch (booking.booking_type) {
+      case 'flight':
+        return `${details?.airline_name} ${details?.flight_number}`;
+      case 'train':
+        return `${details?.train_name}`;
+      case 'bus':
+        return `${details?.operator_name}`;
+      case 'hotel':
+        return `${details?.hotel_name}`;
+      default:
+        return 'Booking';
+    }
+  };
+
   const handleSignOut = async () => {
     await signOut();
     toast({
@@ -165,6 +216,61 @@ const ProfilePage = () => {
           </div>
 
           <div className="grid gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  My Bookings
+                </CardTitle>
+                <CardDescription>
+                  View and manage your travel bookings.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {bookingsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  </div>
+                ) : bookings.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No bookings found. Start planning your next trip!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {bookings.map((booking) => (
+                      <div key={booking.id} className="border rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {getBookingIcon(booking.booking_type)}
+                            <div>
+                              <h4 className="font-semibold">{formatBookingTitle(booking)}</h4>
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <MapPin className="h-3 w-3" />
+                                <span>{booking.from_location} → {booking.to_location}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-semibold">₹{booking.total_amount}</div>
+                            <div className="text-sm text-muted-foreground capitalize">
+                              {booking.status}
+                            </div>
+                          </div>
+                        </div>
+                        {booking.departure_date && (
+                          <div className="mt-2 text-sm text-muted-foreground">
+                            <Calendar className="h-3 w-3 inline mr-1" />
+                            Departure: {new Date(booking.departure_date).toLocaleDateString()}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

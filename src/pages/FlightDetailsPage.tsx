@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plane, Clock, Users } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const FlightDetailsPage = () => {
   const location = useLocation();
@@ -70,15 +71,26 @@ const FlightDetailsPage = () => {
 
       if (error) {
         console.error('Error creating booking:', error);
-        alert('Failed to create booking. Please try again.');
+        toast({
+          title: "Booking Failed",
+          description: "Failed to create booking. Please try again.",
+          variant: "destructive",
+        });
         return;
       }
 
-      alert('Booking created successfully!');
+      toast({
+        title: "Booking Successful! ✈️",
+        description: `Your flight booking for ${flight.flight_number} has been confirmed!`,
+      });
       navigate('/profile');
     } catch (error) {
       console.error('Error in handleBookNow:', error);
-      alert('Failed to create booking. Please try again.');
+      toast({
+        title: "Booking Failed",
+        description: "Failed to create booking. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
