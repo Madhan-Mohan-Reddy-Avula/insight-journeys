@@ -12,6 +12,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
+import { db } from "@/integrations/firebase/client";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 export const FlightBooking = () => {
   const [departureDate, setDepartureDate] = useState<Date>();
@@ -32,38 +34,75 @@ export const FlightBooking = () => {
 
   const fetchFlights = async () => {
     try {
-      // Mock data for flights
-      const mockFlights = [
-        {
-          id: 1,
-          airline_name: "Air India",
-          flight_number: "AI101",
-          from_airport: "BLR",
-          to_airport: "BOM",
-          departure_time: "2024-01-15T06:00:00Z",
-          arrival_time: "2024-01-15T08:30:00Z",
-          duration_hours: 2.5,
-          price: 5500,
-          available_seats: 45,
-          aircraft_type: "Boeing 737"
-        },
-        {
-          id: 2,
-          airline_name: "IndiGo",
-          flight_number: "6E205",
-          from_airport: "DEL",
-          to_airport: "BLR",
-          departure_time: "2024-01-15T14:00:00Z",
-          arrival_time: "2024-01-15T17:00:00Z",
-          duration_hours: 3,
-          price: 4800,
-          available_seats: 60,
-          aircraft_type: "Airbus A320"
-        }
-      ];
+      const flightsRef = collection(db, 'flights');
+      const querySnapshot = await getDocs(flightsRef);
       
-      setFlights(mockFlights);
-      console.log('Loaded mock flights:', mockFlights);
+      if (querySnapshot.empty) {
+        // If no data in Firebase, use mock data
+        const mockFlights = [
+          {
+            id: "1",
+            airline_name: "Air India",
+            flight_number: "AI101",
+            from_airport: "Mumbai (BOM)",
+            to_airport: "Delhi (DEL)",
+            departure_time: "2024-01-15T06:00:00Z",
+            arrival_time: "2024-01-15T08:30:00Z",
+            duration_hours: 2.5,
+            price: 5500,
+            available_seats: 45,
+            aircraft_type: "Boeing 737"
+          },
+          {
+            id: "2",
+            airline_name: "IndiGo",
+            flight_number: "6E205",
+            from_airport: "Delhi (DEL)",
+            to_airport: "Bangalore (BLR)",
+            departure_time: "2024-01-15T14:00:00Z",
+            arrival_time: "2024-01-15T17:00:00Z",
+            duration_hours: 3,
+            price: 4800,
+            available_seats: 60,
+            aircraft_type: "Airbus A320"
+          },
+          {
+            id: "3",
+            airline_name: "SpiceJet",
+            flight_number: "SG308",
+            from_airport: "Chennai (MAA)",
+            to_airport: "Mumbai (BOM)",
+            departure_time: "2024-01-15T10:30:00Z",
+            arrival_time: "2024-01-15T12:45:00Z",
+            duration_hours: 2.25,
+            price: 4200,
+            available_seats: 38,
+            aircraft_type: "Boeing 737"
+          },
+          {
+            id: "4",
+            airline_name: "Vistara",
+            flight_number: "UK955",
+            from_airport: "Bangalore (BLR)",
+            to_airport: "Mumbai (BOM)",
+            departure_time: "2024-01-15T16:15:00Z",
+            arrival_time: "2024-01-15T18:00:00Z",
+            duration_hours: 1.75,
+            price: 6200,
+            available_seats: 25,
+            aircraft_type: "Airbus A320"
+          }
+        ];
+        setFlights(mockFlights);
+        console.log('Loaded mock flights:', mockFlights);
+      } else {
+        const flightsData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setFlights(flightsData);
+        console.log('Fetched flights from Firebase:', flightsData);
+      }
     } catch (error) {
       console.error('Error in fetchFlights:', error);
     }

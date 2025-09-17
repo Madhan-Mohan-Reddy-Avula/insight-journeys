@@ -9,6 +9,8 @@ import { CalendarIcon, MapPin, Users, ArrowUpDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { db } from "@/integrations/firebase/client";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -28,25 +30,81 @@ export const BusBooking = () => {
 
   const fetchBuses = async () => {
     try {
-      // Mock data for buses
-      const mockBuses = [
-        {
-          id: 1,
-          operator_name: "RedBus Express",
-          bus_type: "AC Sleeper",
-          from_city: "Bangalore",
-          to_city: "Mumbai",
-          departure_time: "22:00",
-          arrival_time: "12:00",
-          price: 1200,
-          available_seats: 25,
-          amenities: ["wifi", "charging_ports", "blanket"]
-        }
-      ];
+      const busesRef = collection(db, 'buses');
+      const querySnapshot = await getDocs(busesRef);
       
-      setBuses(mockBuses);
+      if (querySnapshot.empty) {
+        // If no data in Firebase, use mock data
+        const mockBuses = [
+          {
+            id: "1",
+            operator_name: "Redbus Express",
+            bus_number: "RB101",
+            from_city: "Mumbai",
+            to_city: "Pune",
+            departure_time: "06:00",
+            arrival_time: "09:30",
+            duration_hours: 3.5,
+            price: 450,
+            available_seats: 25,
+            bus_type: "AC Sleeper",
+            amenities: ["wifi", "charging_ports", "blanket"]
+          },
+          {
+            id: "2",
+            operator_name: "Orange Travels",
+            bus_number: "OT205",
+            from_city: "Delhi",
+            to_city: "Chandigarh",
+            departure_time: "22:00",
+            arrival_time: "05:00",
+            duration_hours: 7,
+            price: 650,
+            available_seats: 18,
+            bus_type: "Non-AC Seater",
+            amenities: ["charging_ports"]
+          },
+          {
+            id: "3",
+            operator_name: "VRL Travels",
+            bus_number: "VRL301",
+            from_city: "Bangalore",
+            to_city: "Mumbai",
+            departure_time: "20:30",
+            arrival_time: "12:00",
+            duration_hours: 15.5,
+            price: 1200,
+            available_seats: 30,
+            bus_type: "Volvo AC",
+            amenities: ["wifi", "charging_ports", "blanket", "entertainment"]
+          },
+          {
+            id: "4",
+            operator_name: "SRS Travels",
+            bus_number: "SRS505",
+            from_city: "Chennai",
+            to_city: "Bangalore",
+            departure_time: "23:00",
+            arrival_time: "06:30",
+            duration_hours: 7.5,
+            price: 800,
+            available_seats: 22,
+            bus_type: "AC Sleeper",
+            amenities: ["wifi", "charging_ports"]
+          }
+        ];
+        setBuses(mockBuses);
+        console.log('Loaded mock buses:', mockBuses);
+      } else {
+        const busesData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setBuses(busesData);
+        console.log('Fetched buses from Firebase:', busesData);
+      }
     } catch (error) {
-      console.error('Error fetching buses:', error);
+      console.error('Error in fetchBuses:', error);
     }
   };
 
@@ -119,10 +177,12 @@ export const BusBooking = () => {
     });
   };
 
-  // Extract unique cities from database for suggestions
+  // Extract unique cities from buses for suggestions
   const cities = Array.from(new Set([
     ...buses.map((bus: any) => bus.from_city),
-    ...buses.map((bus: any) => bus.to_city)
+    ...buses.map((bus: any) => bus.to_city),
+    // Add common cities for better suggestions
+    "Mumbai", "Delhi", "Bangalore", "Chennai", "Pune", "Hyderabad", "Kolkata", "Ahmedabad", "Chandigarh", "Goa"
   ])).filter(Boolean).sort();
 
   const handleSwapCities = () => {

@@ -12,6 +12,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
+import { db } from "@/integrations/firebase/client";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 export const TrainBooking = () => {
   const [date, setDate] = useState<Date>();
@@ -30,44 +32,86 @@ export const TrainBooking = () => {
 
   const fetchTrains = async () => {
     try {
-      // Mock data for trains
-      const mockTrains = [
-        {
-          id: 1,
-          train_name: "Rajdhani Express",
-          train_number: "12301",
-          from_station: "New Delhi",
-          to_station: "Mumbai Central",
-          departure_time: "16:55",
-          arrival_time: "08:35",
-          duration_hours: 15,
-          classes: {
-            "1ac": { name: "First AC", price: 4500, available_seats: 10 },
-            "2ac": { name: "Second AC", price: 3200, available_seats: 20 },
-            "3ac": { name: "Third AC", price: 2400, available_seats: 30 },
-            "sleeper": { name: "Sleeper", price: 800, available_seats: 50 }
-          },
-          amenities: ["wifi", "charging_ports", "pantry"]
-        },
-        {
-          id: 2,
-          train_name: "Shatabdi Express",
-          train_number: "12002",
-          from_station: "New Delhi",
-          to_station: "Agra Cantt",
-          departure_time: "06:00",
-          arrival_time: "08:03",
-          duration_hours: 2,
-          classes: {
-            "cc": { name: "Chair Car", price: 600, available_seats: 40 },
-            "ec": { name: "Executive Chair", price: 1200, available_seats: 20 }
-          },
-          amenities: ["wifi", "charging_ports", "meals"]
-        }
-      ];
+      const trainsRef = collection(db, 'trains');
+      const querySnapshot = await getDocs(trainsRef);
       
-      setTrains(mockTrains);
-      console.log('Loaded mock trains:', mockTrains);
+      if (querySnapshot.empty) {
+        // If no data in Firebase, use mock data
+        const mockTrains = [
+          {
+            id: "1",
+            train_name: "Rajdhani Express",
+            train_number: "12301",
+            from_station: "New Delhi",
+            to_station: "Mumbai Central",
+            departure_time: "16:55",
+            arrival_time: "08:35",
+            duration_hours: 15,
+            classes: {
+              "1ac": { name: "First AC", price: 4500, available_seats: 10 },
+              "2ac": { name: "Second AC", price: 3200, available_seats: 20 },
+              "3ac": { name: "Third AC", price: 2400, available_seats: 30 },
+              "sleeper": { name: "Sleeper", price: 800, available_seats: 50 }
+            },
+            amenities: ["wifi", "charging_ports", "pantry"]
+          },
+          {
+            id: "2",
+            train_name: "Shatabdi Express",
+            train_number: "12002",
+            from_station: "New Delhi",
+            to_station: "Agra Cantt",
+            departure_time: "06:00",
+            arrival_time: "08:03",
+            duration_hours: 2,
+            classes: {
+              "cc": { name: "Chair Car", price: 600, available_seats: 40 },
+              "ec": { name: "Executive Chair", price: 1200, available_seats: 20 }
+            },
+            amenities: ["wifi", "charging_ports", "meals"]
+          },
+          {
+            id: "3",
+            train_name: "Duronto Express",
+            train_number: "12267",
+            from_station: "Mumbai Central",
+            to_station: "New Delhi",
+            departure_time: "21:25",
+            arrival_time: "11:50",
+            duration_hours: 14.5,
+            classes: {
+              "1ac": { name: "First AC", price: 4200, available_seats: 8 },
+              "2ac": { name: "Second AC", price: 3000, available_seats: 18 },
+              "3ac": { name: "Third AC", price: 2200, available_seats: 25 }
+            },
+            amenities: ["wifi", "charging_ports", "pantry"]
+          },
+          {
+            id: "4",
+            train_name: "Garib Rath",
+            train_number: "12617",
+            from_station: "Chennai Central",
+            to_station: "New Delhi",
+            departure_time: "14:20",
+            arrival_time: "22:10",
+            duration_hours: 31.8,
+            classes: {
+              "3ac": { name: "Third AC", price: 1800, available_seats: 35 },
+              "cc": { name: "Chair Car", price: 900, available_seats: 45 }
+            },
+            amenities: ["charging_ports"]
+          }
+        ];
+        setTrains(mockTrains);
+        console.log('Loaded mock trains:', mockTrains);
+      } else {
+        const trainsData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setTrains(trainsData);
+        console.log('Fetched trains from Firebase:', trainsData);
+      }
     } catch (error) {
       console.error('Error in fetchTrains:', error);
     }

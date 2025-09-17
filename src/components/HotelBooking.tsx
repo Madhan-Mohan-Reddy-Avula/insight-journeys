@@ -12,6 +12,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
+import { db } from "@/integrations/firebase/client";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 export const HotelBooking = () => {
   const [checkInDate, setCheckInDate] = useState<Date>();
@@ -30,34 +32,78 @@ export const HotelBooking = () => {
 
   const fetchHotels = async () => {
     try {
-      // Mock data for hotels
-      const mockHotels = [
-        {
-          id: 1,
-          hotel_name: "Grand Palace Hotel",
-          location: "Mumbai Central",
-          city: "Mumbai",
-          star_rating: 4,
-          price_per_night: 3500,
-          available_rooms: 15,
-          amenities: ["wifi", "parking", "restaurant", "spa"],
-          images: []
-        },
-        {
-          id: 2,
-          hotel_name: "Comfort Inn",
-          location: "Connaught Place",
-          city: "Delhi",
-          star_rating: 3,
-          price_per_night: 2200,
-          available_rooms: 25,
-          amenities: ["wifi", "restaurant"],
-          images: []
-        }
-      ];
+      const hotelsRef = collection(db, 'hotels');
+      const querySnapshot = await getDocs(hotelsRef);
       
-      setHotels(mockHotels);
-      console.log('Loaded mock hotels:', mockHotels);
+      if (querySnapshot.empty) {
+        // If no data in Firebase, use mock data
+        const mockHotels = [
+          {
+            id: "1",
+            hotel_name: "Grand Palace Hotel",
+            location: "Mumbai Central",
+            city: "Mumbai",
+            star_rating: 4,
+            price_per_night: 3500,
+            available_rooms: 15,
+            amenities: ["wifi", "parking", "restaurant", "spa"],
+            images: []
+          },
+          {
+            id: "2",
+            hotel_name: "Comfort Inn",
+            location: "Connaught Place",
+            city: "Delhi",
+            star_rating: 3,
+            price_per_night: 2200,
+            available_rooms: 25,
+            amenities: ["wifi", "restaurant"],
+            images: []
+          },
+          {
+            id: "3",
+            hotel_name: "The Leela Palace",
+            location: "MG Road",
+            city: "Bangalore",
+            star_rating: 5,
+            price_per_night: 8500,
+            available_rooms: 12,
+            amenities: ["wifi", "parking", "restaurant", "spa", "pool", "gym"],
+            images: []
+          },
+          {
+            id: "4",
+            hotel_name: "Hotel Taj",
+            location: "Marina Beach",
+            city: "Chennai",
+            star_rating: 4,
+            price_per_night: 4200,
+            available_rooms: 20,
+            amenities: ["wifi", "restaurant", "pool", "spa"],
+            images: []
+          },
+          {
+            id: "5",
+            hotel_name: "Hotel Radisson",
+            location: "Banjara Hills",
+            city: "Hyderabad",
+            star_rating: 4,
+            price_per_night: 3800,
+            available_rooms: 18,
+            amenities: ["wifi", "parking", "restaurant", "gym"],
+            images: []
+          }
+        ];
+        setHotels(mockHotels);
+        console.log('Loaded mock hotels:', mockHotels);
+      } else {
+        const hotelsData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setHotels(hotelsData);
+        console.log('Fetched hotels from Firebase:', hotelsData);
+      }
     } catch (error) {
       console.error('Error in fetchHotels:', error);
     }
@@ -115,7 +161,9 @@ export const HotelBooking = () => {
   // Extract unique cities from database for suggestions
   const cities = Array.from(new Set([
     ...hotels.map((hotel: any) => hotel.city),
-    ...hotels.map((hotel: any) => hotel.hotel_name)
+    ...hotels.map((hotel: any) => hotel.hotel_name),
+    // Add common cities for better suggestions
+    "Mumbai", "Delhi", "Bangalore", "Chennai", "Hyderabad", "Pune", "Kolkata", "Ahmedabad", "Goa", "Jaipur"
   ])).filter(Boolean).sort();
 
   const handleSwapDates = () => {
