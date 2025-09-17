@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Train, Clock, Users, Wifi, Coffee } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/firebase/client";
+import { collection, addDoc } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 
 const TrainDetailsPage = () => {
@@ -43,40 +44,27 @@ const TrainDetailsPage = () => {
     }
     
     try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .insert([
-          {
-            user_id: user.id,
-            booking_type: 'train',
-            from_location: searchData?.fromStation,
-            to_location: searchData?.toStation,
-            departure_date: searchData?.date,
-            passengers: searchData?.passengers || 1,
-            total_amount: train.classes?.sleeper?.price || train.classes?.['3ac']?.price || 0,
-            status: 'pending',
-            booking_details: {
-              train_id: train.id,
-              train_name: train.train_name,
-              train_number: train.train_number,
-              departure_time: train.departure_time,
-              arrival_time: train.arrival_time,
-              duration_hours: train.duration_hours,
-              classes: train.classes
-            }
-          }
-        ])
-        .select();
-
-      if (error) {
-        console.error('Error creating booking:', error);
-        toast({
-          title: "Booking Failed",
-          description: "Failed to create booking. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
+      await addDoc(collection(db, 'bookings'), {
+        user_id: user.uid,
+        booking_type: 'train',
+        from_location: searchData?.fromStation,
+        to_location: searchData?.toStation,
+        departure_date: searchData?.date,
+        passengers: searchData?.passengers || 1,
+        total_amount: train.classes?.sleeper?.price || train.classes?.['3ac']?.price || 0,
+        status: 'pending',
+        booking_details: {
+          train_id: train.id,
+          train_name: train.train_name,
+          train_number: train.train_number,
+          departure_time: train.departure_time,
+          arrival_time: train.arrival_time,
+          duration_hours: train.duration_hours,
+          classes: train.classes
+        },
+        created_at: new Date(),
+        updated_at: new Date()
+      });
 
       toast({
         title: "Booking Successful! 🚂",

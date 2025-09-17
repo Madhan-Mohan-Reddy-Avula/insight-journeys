@@ -8,7 +8,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ArrowLeft, User, Mail, Phone, Eye, EyeOff, Lock, Calendar, MapPin, Plane, Train, Bus, Hotel } from "lucide-react";
 import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/firebase/client";
+import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import { updatePassword } from "firebase/auth";
 
 const ProfilePage = () => {
   const [displayName, setDisplayName] = useState("");
@@ -42,24 +44,24 @@ const ProfilePage = () => {
     if (!user) return;
     
     setProfileLoading(true);
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('display_name, email, phone')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (error) {
+    try {
+      const docRef = doc(db, 'profiles', user.uid);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const profile = docSnap.data();
+        setDisplayName(profile.display_name || "");
+        setEmail(profile.email || user.email || "");
+        setPhone(profile.phone || "");
+      } else {
+        setEmail(user.email || "");
+      }
+    } catch (error: any) {
       toast({
         title: "Error loading profile",
         description: error.message,
         variant: "destructive",
       });
-    } else if (profile) {
-      setDisplayName(profile.display_name || "");
-      setEmail(profile.email || user.email || "");
-      setPhone(profile.phone || "");
-    } else {
-      setEmail(user.email || "");
     }
     setProfileLoading(false);
   };
@@ -68,20 +70,26 @@ const ProfilePage = () => {
     if (!user) return;
     
     setBookingsLoading(true);
-    const { data: userBookings, error } = await supabase
-      .from('bookings')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-
-    if (error) {
+    try {
+      const q = query(
+        collection(db, 'bookings'),
+        where('user_id', '==', user.uid),
+        orderBy('created_at', 'desc')
+      );
+      
+      const querySnapshot = await getDocs(q);
+      const userBookings = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      setBookings(userBookings);
+    } catch (error: any) {
       toast({
         title: "Error loading bookings",
         description: error.message,
         variant: "destructive",
       });
-    } else {
-      setBookings(userBookings || []);
     }
     setBookingsLoading(false);
   };
@@ -92,27 +100,25 @@ const ProfilePage = () => {
     
     setLoading(true);
     
-    const { error } = await supabase
-      .from('profiles')
-      .upsert({
-        user_id: user.id,
+    try {
+      const docRef = doc(db, 'profiles', user.uid);
+      await setDoc(docRef, {
+        user_id: user.uid,
         display_name: displayName,
         email: email,
         phone: phone,
-      }, {
-        onConflict: 'user_id'
-      });
+        updated_at: new Date()
+      }, { merge: true });
 
-    if (error) {
+      toast({
+        title: "Profile updated!",
+        description: "Your profile has been successfully updated.",
+      });
+    } catch (error: any) {
       toast({
         title: "Error updating profile",
         description: error.message,
         variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Profile updated!",
-        description: "Your profile has been successfully updated.",
       });
     }
     setLoading(false);
@@ -142,23 +148,21 @@ const ProfilePage = () => {
     
     setPasswordLoading(true);
     
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword
-    });
-
-    if (error) {
-      toast({
-        title: "Error updating password",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
+    try {
+      await updatePassword(user, newPassword);
+      
       toast({
         title: "Password updated!",
         description: "Your password has been successfully updated.",
       });
       setNewPassword("");
       setConfirmPassword("");
+    } catch (error: any) {
+      toast({
+        title: "Error updating password",
+        description: error.message,
+        variant: "destructive",
+      });
     }
     setPasswordLoading(false);
   };

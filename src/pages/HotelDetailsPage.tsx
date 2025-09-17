@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Hotel, MapPin, Star, Wifi, Coffee, Car } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/firebase/client";
+import { collection, addDoc } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 
 const HotelDetailsPage = () => {
@@ -43,39 +44,26 @@ const HotelDetailsPage = () => {
     }
     
     try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .insert([
-          {
-            user_id: user.id,
-            booking_type: 'hotel',
-            from_location: searchData?.destination,
-            departure_date: searchData?.checkInDate,
-            return_date: searchData?.checkOutDate,
-            passengers: searchData?.guests || 1,
-            total_amount: hotel.price_per_night,
-            status: 'pending',
-            booking_details: {
-              hotel_id: hotel.id,
-              hotel_name: hotel.hotel_name,
-              location: hotel.location,
-              star_rating: hotel.star_rating,
-              price_per_night: hotel.price_per_night,
-              amenities: hotel.amenities
-            }
-          }
-        ])
-        .select();
-
-      if (error) {
-        console.error('Error creating booking:', error);
-        toast({
-          title: "Booking Failed",
-          description: "Failed to create booking. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
+      await addDoc(collection(db, 'bookings'), {
+        user_id: user.uid,
+        booking_type: 'hotel',
+        from_location: searchData?.destination,
+        departure_date: searchData?.checkInDate,
+        return_date: searchData?.checkOutDate,
+        passengers: searchData?.guests || 1,
+        total_amount: hotel.price_per_night,
+        status: 'pending',
+        booking_details: {
+          hotel_id: hotel.id,
+          hotel_name: hotel.hotel_name,
+          location: hotel.location,
+          star_rating: hotel.star_rating,
+          price_per_night: hotel.price_per_night,
+          amenities: hotel.amenities
+        },
+        created_at: new Date(),
+        updated_at: new Date()
+      });
 
       toast({
         title: "Booking Successful! 🏨",

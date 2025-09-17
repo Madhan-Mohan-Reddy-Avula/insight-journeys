@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plane, Clock, Users } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/firebase/client";
+import { collection, addDoc } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 
 const FlightDetailsPage = () => {
@@ -43,41 +44,28 @@ const FlightDetailsPage = () => {
     }
     
     try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .insert([
-          {
-            user_id: user.id,
-            booking_type: 'flight',
-            from_location: searchData?.fromCity,
-            to_location: searchData?.toCity,
-            departure_date: searchData?.departureDate,
-            return_date: searchData?.returnDate,
-            passengers: searchData?.passengers || 1,
-            total_amount: flight.price,
-            status: 'pending',
-            booking_details: {
-              flight_id: flight.id,
-              airline_name: flight.airline_name,
-              flight_number: flight.flight_number,
-              departure_time: flight.departure_time,
-              arrival_time: flight.arrival_time,
-              duration_hours: flight.duration_hours,
-              aircraft_type: flight.aircraft_type
-            }
-          }
-        ])
-        .select();
-
-      if (error) {
-        console.error('Error creating booking:', error);
-        toast({
-          title: "Booking Failed",
-          description: "Failed to create booking. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
+      await addDoc(collection(db, 'bookings'), {
+        user_id: user.uid,
+        booking_type: 'flight',
+        from_location: searchData?.fromCity,
+        to_location: searchData?.toCity,
+        departure_date: searchData?.departureDate,
+        return_date: searchData?.returnDate,
+        passengers: searchData?.passengers || 1,
+        total_amount: flight.price,
+        status: 'pending',
+        booking_details: {
+          flight_id: flight.id,
+          airline_name: flight.airline_name,
+          flight_number: flight.flight_number,
+          departure_time: flight.departure_time,
+          arrival_time: flight.arrival_time,
+          duration_hours: flight.duration_hours,
+          aircraft_type: flight.aircraft_type
+        },
+        created_at: new Date(),
+        updated_at: new Date()
+      });
 
       toast({
         title: "Booking Successful! ✈️",

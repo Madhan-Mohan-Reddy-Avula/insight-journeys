@@ -11,7 +11,6 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 
 export const BusBooking = () => {
   const [date, setDate] = useState<Date>();
@@ -29,7 +28,31 @@ export const BusBooking = () => {
 
   const fetchBuses = async () => {
     try {
-      const { data, error } = await (supabase as any)
+      // Mock data for buses
+      const mockBuses = [
+        {
+          id: 1,
+          operator_name: "RedBus Express",
+          bus_type: "AC Sleeper",
+          from_city: "Bangalore",
+          to_city: "Mumbai",
+          departure_time: "22:00",
+          arrival_time: "12:00",
+          price: 1200,
+          available_seats: 25,
+          amenities: ["wifi", "charging_ports", "blanket"]
+        }
+      ];
+      
+      setBuses(mockBuses);
+    } catch (error) {
+      console.error('Error fetching buses:', error);
+    }
+  };
+
+  const fetchBusesOld = async () => {
+    try {
+      const { data, error } = await (null as any)
         .from('buses')
         .select('*')
         .eq('is_active', true);

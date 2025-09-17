@@ -12,7 +12,6 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 
 export const HotelBooking = () => {
   const [checkInDate, setCheckInDate] = useState<Date>();

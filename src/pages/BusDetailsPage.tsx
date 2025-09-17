@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Clock, Users, Wifi, Coffee } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/firebase/client";
+import { collection, addDoc } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 
 const BusDetailsPage = () => {
@@ -43,39 +44,26 @@ const BusDetailsPage = () => {
     }
     
     try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .insert([
-          {
-            user_id: user.id,
-            booking_type: 'bus',
-            from_location: searchData?.fromCity,
-            to_location: searchData?.toCity,
-            departure_date: searchData?.date,
-            passengers: searchData?.passengers || 1,
-            total_amount: bus.price,
-            status: 'pending',
-            booking_details: {
-              bus_id: bus.id,
-              operator_name: bus.operator_name,
-              bus_type: bus.bus_type,
-              departure_time: bus.departure_time,
-              arrival_time: bus.arrival_time,
-              bus_number: bus.bus_number
-            }
-          }
-        ])
-        .select();
-
-      if (error) {
-        console.error('Error creating booking:', error);
-        toast({
-          title: "Booking Failed",
-          description: "Failed to create booking. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
+      await addDoc(collection(db, 'bookings'), {
+        user_id: user.uid,
+        booking_type: 'bus',
+        from_location: searchData?.fromCity,
+        to_location: searchData?.toCity,
+        departure_date: searchData?.date,
+        passengers: searchData?.passengers || 1,
+        total_amount: bus.price,
+        status: 'pending',
+        booking_details: {
+          bus_id: bus.id,
+          operator_name: bus.operator_name,
+          bus_type: bus.bus_type,
+          departure_time: bus.departure_time,
+          arrival_time: bus.arrival_time,
+          bus_number: bus.bus_number
+        },
+        created_at: new Date(),
+        updated_at: new Date()
+      });
 
       toast({
         title: "Booking Successful! 🚌",
