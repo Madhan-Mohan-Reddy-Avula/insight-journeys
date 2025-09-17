@@ -32,20 +32,38 @@ export const FlightBooking = () => {
 
   const fetchFlights = async () => {
     try {
-      const { data, error } = await (supabase as any)
-        .from('flights')
-        .select('*')
-        .eq('is_active', true);
+      // Mock data for flights
+      const mockFlights = [
+        {
+          id: 1,
+          airline_name: "Air India",
+          flight_number: "AI101",
+          from_airport: "BLR",
+          to_airport: "BOM",
+          departure_time: "2024-01-15T06:00:00Z",
+          arrival_time: "2024-01-15T08:30:00Z",
+          duration_hours: 2.5,
+          price: 5500,
+          available_seats: 45,
+          aircraft_type: "Boeing 737"
+        },
+        {
+          id: 2,
+          airline_name: "IndiGo",
+          flight_number: "6E205",
+          from_airport: "DEL",
+          to_airport: "BLR",
+          departure_time: "2024-01-15T14:00:00Z",
+          arrival_time: "2024-01-15T17:00:00Z",
+          duration_hours: 3,
+          price: 4800,
+          available_seats: 60,
+          aircraft_type: "Airbus A320"
+        }
+      ];
       
-      if (error) {
-        console.error('Error fetching flights:', error);
-        return;
-      }
-      
-      if (data) {
-        setFlights(data);
-        console.log('Fetched flights:', data);
-      }
+      setFlights(mockFlights);
+      console.log('Loaded mock flights:', mockFlights);
     } catch (error) {
       console.error('Error in fetchFlights:', error);
     }

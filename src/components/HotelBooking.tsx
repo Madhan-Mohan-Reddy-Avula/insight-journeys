@@ -30,20 +30,34 @@ export const HotelBooking = () => {
 
   const fetchHotels = async () => {
     try {
-      const { data, error } = await (supabase as any)
-        .from('hotels')
-        .select('*')
-        .eq('is_active', true);
+      // Mock data for hotels
+      const mockHotels = [
+        {
+          id: 1,
+          hotel_name: "Grand Palace Hotel",
+          location: "Mumbai Central",
+          city: "Mumbai",
+          star_rating: 4,
+          price_per_night: 3500,
+          available_rooms: 15,
+          amenities: ["wifi", "parking", "restaurant", "spa"],
+          images: []
+        },
+        {
+          id: 2,
+          hotel_name: "Comfort Inn",
+          location: "Connaught Place",
+          city: "Delhi",
+          star_rating: 3,
+          price_per_night: 2200,
+          available_rooms: 25,
+          amenities: ["wifi", "restaurant"],
+          images: []
+        }
+      ];
       
-      if (error) {
-        console.error('Error fetching hotels:', error);
-        return;
-      }
-      
-      if (data) {
-        setHotels(data);
-        console.log('Fetched hotels:', data);
-      }
+      setHotels(mockHotels);
+      console.log('Loaded mock hotels:', mockHotels);
     } catch (error) {
       console.error('Error in fetchHotels:', error);
     }

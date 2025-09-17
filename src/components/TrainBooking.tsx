@@ -30,20 +30,44 @@ export const TrainBooking = () => {
 
   const fetchTrains = async () => {
     try {
-      const { data, error } = await (supabase as any)
-        .from('trains')
-        .select('*')
-        .eq('is_active', true);
+      // Mock data for trains
+      const mockTrains = [
+        {
+          id: 1,
+          train_name: "Rajdhani Express",
+          train_number: "12301",
+          from_station: "New Delhi",
+          to_station: "Mumbai Central",
+          departure_time: "16:55",
+          arrival_time: "08:35",
+          duration_hours: 15,
+          classes: {
+            "1ac": { name: "First AC", price: 4500, available_seats: 10 },
+            "2ac": { name: "Second AC", price: 3200, available_seats: 20 },
+            "3ac": { name: "Third AC", price: 2400, available_seats: 30 },
+            "sleeper": { name: "Sleeper", price: 800, available_seats: 50 }
+          },
+          amenities: ["wifi", "charging_ports", "pantry"]
+        },
+        {
+          id: 2,
+          train_name: "Shatabdi Express",
+          train_number: "12002",
+          from_station: "New Delhi",
+          to_station: "Agra Cantt",
+          departure_time: "06:00",
+          arrival_time: "08:03",
+          duration_hours: 2,
+          classes: {
+            "cc": { name: "Chair Car", price: 600, available_seats: 40 },
+            "ec": { name: "Executive Chair", price: 1200, available_seats: 20 }
+          },
+          amenities: ["wifi", "charging_ports", "meals"]
+        }
+      ];
       
-      if (error) {
-        console.error('Error fetching trains:', error);
-        return;
-      }
-      
-      if (data) {
-        setTrains(data);
-        console.log('Fetched trains:', data);
-      }
+      setTrains(mockTrains);
+      console.log('Loaded mock trains:', mockTrains);
     } catch (error) {
       console.error('Error in fetchTrains:', error);
     }
