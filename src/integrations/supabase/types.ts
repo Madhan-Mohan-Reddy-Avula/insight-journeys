@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_conversations: {
+        Row: {
+          conversation_type: string
+          created_at: string
+          id: string
+          messages: Json
+          trip_plan_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_type?: string
+          created_at?: string
+          id?: string
+          messages?: Json
+          trip_plan_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conversation_type?: string
+          created_at?: string
+          id?: string
+          messages?: Json
+          trip_plan_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           booking_details: Json | null
@@ -316,6 +346,51 @@ export type Database = {
           to_station?: string
           train_name?: string
           train_number?: string
+        }
+        Relationships: []
+      }
+      trip_plans: {
+        Row: {
+          created_at: string
+          destinations: string[]
+          end_date: string
+          group_size: number
+          id: string
+          start_date: string
+          status: string
+          total_budget: number | null
+          trip_details: Json | null
+          trip_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          destinations: string[]
+          end_date: string
+          group_size?: number
+          id?: string
+          start_date: string
+          status?: string
+          total_budget?: number | null
+          trip_details?: Json | null
+          trip_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          destinations?: string[]
+          end_date?: string
+          group_size?: number
+          id?: string
+          start_date?: string
+          status?: string
+          total_budget?: number | null
+          trip_details?: Json | null
+          trip_name?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
